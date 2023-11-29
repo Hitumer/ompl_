@@ -44,6 +44,8 @@
 
 #include <ompl/geometric/planners/informedtrees/FITstar.h>
 #include <ompl/geometric/planners/informedtrees/fitstar/Edge.h>
+#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+
 #ifdef PDT_EXTRA_EITSTAR_PR
 #include <ompl/geometric/planners/informedtrees/EITstar.h>
 #include <ompl/geometric/planners/informedtrees/eitstar/Edge.h>
@@ -159,6 +161,8 @@ class FITstarData : public PlannerSpecificData {
   std::vector<ompl::geometric::fitstar::Edge> getReverseTree() const;
   std::vector<ompl::geometric::fitstar::Edge> getForwardQueue() const;
   std::vector<ompl::geometric::fitstar::Edge> getReverseQueue() const;
+  std::vector<ompl::geometric::fitstar::TotalForce> getForceDirection() const;
+
   ompl::geometric::fitstar::Edge getNextForwardEdge() const;
   ompl::geometric::fitstar::Edge getNextReverseEdge() const;
 
@@ -166,6 +170,8 @@ class FITstarData : public PlannerSpecificData {
   void setReverseTree(const std::vector<ompl::geometric::fitstar::Edge>& tree);
   void setForwardQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue);
   void setReverseQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue);
+  void setForceDirection(const std::vector<ompl::geometric::fitstar::TotalForce>& queue);
+
   void setNextForwardEdge(const ompl::geometric::fitstar::Edge& edge);
   void setNextReverseEdge(const ompl::geometric::fitstar::Edge& edge);
 
@@ -173,6 +179,8 @@ class FITstarData : public PlannerSpecificData {
   std::vector<ompl::geometric::fitstar::Edge> reverseTree_{};
   std::vector<ompl::geometric::fitstar::Edge> forwardQueue_{};
   std::vector<ompl::geometric::fitstar::Edge> reverseQueue_{};
+  std::vector<ompl::geometric::fitstar::TotalForce> totalForceVec_{};
+
   ompl::geometric::fitstar::Edge nextForwardEdge_{};
   ompl::geometric::fitstar::Edge nextReverseEdge_{};
 };

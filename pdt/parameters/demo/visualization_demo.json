@@ -3,7 +3,6 @@
         "executable": "visualization",
         "planner": "defaultFITstar",
         "context": "RandomRectangles2D",
-        "seed": 1109,
         "useOnlyThisConfig": false
 
     },
