@@ -1,0 +1,25 @@
+{
+    "planner": {
+        "defaultFITstar": {
+            "type": "FITstar",
+            "isAnytime": true,
+            "report": {
+                "color": "pdtred",
+                "name": "FIT*"
+            },
+            "options": {
+                "radiusFactor": 1.001,
+                "repairFactor": 1.2,
+                "useKNearest": false,
+                "useAllKNearest": true,
+                "useAdaptiveBatchSize": true,
+                "enablePruning": true,
+                "trackApproximateSolutions": false,
+                "repairReverseSearchTreeUponCollisionDetection": false,
+                "collisionDetectionOnReverseSearch": true,
+                "numInitialCollisionChecks": 1,
+                "resetSuboptimalityFactorOnEveryApproximation": false
+            }
+        }
+    }
+}

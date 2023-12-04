@@ -1,0 +1,29 @@
+/ ompl/build 
+
+cmake -DCMAKE_BUILD_TYPE=Debug .. 
+
+make -j 6 
+
+sudo cmake --install .
+*********************************************
+ompl/pdt/build 
+
+
+cmake -DPDT_OMPL_DIR=/usr/local .. 
+
+cmake --build . make -j 6
+
+./bin/benchmark -c ../parameters/demo/benchmark_demo.json
+
+./bin/visualization -c ../parameters/demo/visualization_demo.json
+
+******************************************
+
+
+std::cout << "-------------" << << std::endl;
+
+
+
+getnewsample之后，sample_存储tree的消息，之后要怎么使用？？？？
+
+再进入iterate reversesearch  expand其中target， 找到getallneighbors的点。 其中用到 sample_ tree的信息。

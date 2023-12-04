@@ -1,0 +1,21 @@
+{
+    "experiment": {
+        "executable": "benchmark",
+        "planners": [
+            "defaultFITstar",
+            "defaultRRTConnect",
+            "defaultInformedRRTstar",
+            "defaultBITstar",
+            "defaultAITstar",
+            "defaultABITstar",
+            "defaultEITstar"
+        ],
+        "context": "defaultRandomRectangles2D",
+        "numRuns": 35,
+        "logFrequency": 10000,
+        "loadDefaultContextConfig": true,
+        "loadDefaultObjectiveConfig": true,
+        "loadDefaultPlannerConfig": true,
+        "loadDefaultReportConfig": true
+    }
+}

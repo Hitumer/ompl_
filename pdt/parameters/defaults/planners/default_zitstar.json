@@ -1,0 +1,29 @@
+{
+    "planner": {
+        "defaultZITstar": {
+            "type": "ZITstar",
+            "isAnytime": true,
+            "report": {
+                "color": "pdtyellow",
+                "name": "ZIT*"
+            },
+            "options": {
+                "batchSize":250,
+                "numInterpolations": 200,
+                "radiusFactor": 1.01,
+                "repairFactor": 1.2,
+                "useKNearest": false,
+                "useAdaptiveBatchSize": true,
+                "useDirectionFilter": true,
+                "useDirectionCost": true,
+                "useRadiusFactor": false,
+                "enablePruning": true,
+                "trackApproximateSolutions": false,
+                "repairReverseSearchTreeUponCollisionDetection": false,
+                "collisionDetectionOnReverseSearch": true,
+                "numInitialCollisionChecks": 1,
+                "resetSuboptimalityFactorOnEveryApproximation": false
+            }
+        }
+    }
+}
