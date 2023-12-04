@@ -13,6 +13,9 @@ cmake -DPDT_OMPL_DIR=/usr/local ..
 
 cmake --build . make -j 6
 
+
+sudo sh ./buildscript.sh
+
 ./bin/benchmark -c ../parameters/demo/benchmark_demo.json
 
 ./bin/visualization -c ../parameters/demo/visualization_demo.json
