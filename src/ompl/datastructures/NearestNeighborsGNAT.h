@@ -125,6 +125,14 @@ namespace ompl
             if (tree_)
                 rebuildDataStructure();
         }
+        // void setDistanceFunction1(const typename NearestNeighbors<_T>::DistanceFunction1 &distFun) override
+        // {
+        //     NearestNeighbors<_T>::setDistanceFunction1(distFun);
+        //     pivotSelector_.setDistanceFunction1(distFun);
+        //     if (tree_)
+        //         rebuildDataStructure();
+        // }
+
 
         void clear() override
         {

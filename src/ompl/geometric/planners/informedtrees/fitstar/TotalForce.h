@@ -31,9 +31,6 @@ namespace ompl
 
                 /** \brief Destructs this vertex. */
                 ~TotalForce();
-
-                typedef std::vector<double> Vector;
-
                 /** \brief Set the state */
                 void setState(const std::shared_ptr<State> &state);
 
@@ -43,8 +40,8 @@ namespace ompl
                 /** \brief Return the states */
                 std::vector<std::shared_ptr<State>> getStates() const;
 
-                /** \brief Return the Vector by two states */
-                Vector getVector(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const;
+                /** \brief Return the std::vector<double> by two states */
+                std::vector<double> getVector(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const;
 
                 double distance(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const;
 
@@ -67,23 +64,23 @@ namespace ompl
                 void totalForcewithStart(const std::shared_ptr<State>& currentState, const std::shared_ptr<State>& startstate,  const std::shared_ptr<State>& goalstate, bool iterateForwardSearch);
 
                 /** \brief Return the norm of two states */
-                double getNorm(const Vector &v) const;
+                double getNorm(const std::vector<double> &v) const;
 
                 /** \brief Return the dot product of two Vectors */
-                double dotProduct(const Vector &v1, const Vector &v2) const;
+                double dotProduct(const std::vector<double> &v1, const std::vector<double> &v2) const;
 
                 std::vector<double> vectorProjection(const std::vector<double>& a, const std::vector<double>& b);
 
                 /** \brief normalize the vector */
-                Vector normalize(const Vector &v) const;
+                std::vector<double> normalize(const std::vector<double> &v) const;
 
-                /** \brief Check whether the Vector within two guided direction. */
-                bool isVectorBetween(const Vector &targetVector, const Vector &goalVector,
+                /** \brief Check whether the std::vector<double> within two guided direction. */
+                bool isVectorBetween(const std::vector<double> &targetVector, const std::vector<double> &goalVector,
                                      const std::shared_ptr<State> &sourceState,
                                      const std::shared_ptr<State> &neighborState) const;
 
-                /** \brief Check whether the Vector meet the required angle. */
-                bool checkAngle(const Vector &targetVector, const std::shared_ptr<State> &sourceState,
+                /** \brief Check whether the std::vector<double> meet the required angle. */
+                bool checkAngle(const std::vector<double> &targetVector, const std::shared_ptr<State> &sourceState,
                                 const std::shared_ptr<State> &neighborState) const;
 
                 /** \brief filter the neighbors vector using direction info*/
@@ -131,58 +128,61 @@ namespace ompl
                 std::mutex state_mutex_;
             };
 
-            inline TotalForce::Vector operator-(const TotalForce::Vector &lhs,
-                                                     const TotalForce::Vector &rhs)
-            {
-                assert(lhs.size() == rhs.size() && "Vectors must be of the same size for subtraction!");
-
-                TotalForce::Vector result(lhs.size());
-                for (size_t i = 0; i < lhs.size(); ++i)
-                {
-                    result[i] = lhs[i] - rhs[i];
-                }
-                return result;
-            }
-
-            inline TotalForce::Vector operator+(const TotalForce::Vector &lhs,
-                                                     const TotalForce::Vector &rhs)
-            {
-                assert(lhs.size() == rhs.size() && "Vectors must be of the same size for addition!");
-
-                TotalForce::Vector result(lhs.size());
-                for (size_t i = 0; i < lhs.size(); ++i)
-                {
-                    result[i] = lhs[i] + rhs[i];
-                }
-                return result;
-            }
-
-            inline TotalForce::Vector operator*(const TotalForce::Vector &lhs, double scalar)
-            {
-                TotalForce::Vector result(lhs.size());
-                for (size_t i = 0; i < lhs.size(); ++i)
-                {
-                    result[i] = lhs[i] * scalar;
-                }
-                return result;
-            }
-
-            inline TotalForce::Vector operator/(const TotalForce::Vector &lhs, double scalar)
-            {
-                assert(scalar != 0 && "Cannot divide by zero!");
-
-                TotalForce::Vector result(lhs.size());
-                for (size_t i = 0; i < lhs.size(); ++i)
-                {
-                    result[i] = lhs[i] / scalar;
-                }
-                return result;
-            }
-
         }  // namespace fitstar
 
     }  // namespace geometric
 
 }  // namespace ompl
+inline std::vector<double> operator-(const std::vector<double> &lhs,
+                                     const std::vector<double> &rhs)
+{
+    assert(lhs.size() == rhs.size() && "Vectors must be of the same size for subtraction!");
+
+    std::vector<double> result(lhs.size());
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        result[i] = lhs[i] - rhs[i];
+    }
+    return result;
+}
+
+// 向量加法运算符重载
+inline std::vector<double> operator+(const std::vector<double> &lhs,
+                                     const std::vector<double> &rhs)
+{
+    assert(lhs.size() == rhs.size() && "Vectors must be of the same size for addition!");
+
+    std::vector<double> result(lhs.size());
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        result[i] = lhs[i] + rhs[i];
+    }
+    return result;
+}
+
+// 向量与标量的乘法运算符重载
+inline std::vector<double> operator*(const std::vector<double> &lhs, double scalar)
+{
+    std::vector<double> result(lhs.size());
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        result[i] = lhs[i] * scalar;
+    }
+    return result;
+}
+
+// 向量与标量的除法运算符重载
+inline std::vector<double> operator/(const std::vector<double> &lhs, double scalar)
+{
+    assert(scalar != 0 && "Cannot divide by zero!");
+
+    std::vector<double> result(lhs.size());
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        result[i] = lhs[i] / scalar;
+    }
+    return result;
+}
+
 
 #endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_TOTALFORCE_

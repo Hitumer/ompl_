@@ -314,6 +314,8 @@ namespace ompl
                */
             virtual double distance(const State *state1, const State *state2) const = 0;
 
+            //virtual double dimensionwiseDistance(const State *state1, const State *state2, std::vector<double> ForceDirection) const = 0;
+
             /** \brief Get the number of chars in the serialization of a state in this space */
             virtual unsigned int getSerializationLength() const;
 

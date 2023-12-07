@@ -11,6 +11,7 @@
                 "radiusFactor": 1.001,
                 "repairFactor": 1.2,
                 "useKNearest": false,
+                "useRNearest": true,
                 "useAllKNearest": true,
                 "useAdaptiveBatchSize": true,
                 "enablePruning": true,

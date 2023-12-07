@@ -50,6 +50,8 @@ namespace ompl
         /** \brief The definition of a distance function */
         using DistanceFunction = std::function<double(const _T &, const _T &)>;
 
+        //using DistanceFunction1 = std::function<double(const _T &, const _T &, std::vector<double>)>;
+
         NearestNeighbors() = default;
 
         virtual ~NearestNeighbors() = default;

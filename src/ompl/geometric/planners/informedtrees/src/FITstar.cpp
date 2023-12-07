@@ -332,12 +332,12 @@ namespace ompl
             }
 
             double ratio = S / S_max_initial_;
-            
-            double lambda = 100/spaceInfo_->getStateDimension();  // Adjust this value to make the decay faster or slower
+
+            double lambda =
+                100 / spaceInfo_->getStateDimension();  // Adjust this value to make the decay faster or slower
             // Sigmoid function to smooth ratio
             double smoothedValue = 1 / (1 + exp(-10 * (ratio - 0.5)));
             double decay_factor = log(1 + lambda * smoothedValue) / log(1 + lambda);
-
 
             double rewireFactor = 0.101 + (2.001 - 0.101) * decay_factor;
             std::cout << "---------------radiusFactor of current batch is : " << rewireFactor << std::endl;
@@ -449,17 +449,18 @@ namespace ompl
 
             // Define a helper that recursively gets all reverse edges of a vertex.
             const std::function<void(const std::shared_ptr<Vertex> &)> getEdgesRecursively =
-                [&edges, &getEdgesRecursively](const std::shared_ptr<Vertex> &vertex) {
-                    for (const auto &child : vertex->getChildren())
-                    {
-                        getEdgesRecursively(child);
-                    }
-                    // Catch the root case of the recursion.
-                    if (auto parent = vertex->getParent().lock())
-                    {
-                        edges.emplace_back(parent->getState(), vertex->getState());
-                    }
-                };
+                [&edges, &getEdgesRecursively](const std::shared_ptr<Vertex> &vertex)
+            {
+                for (const auto &child : vertex->getChildren())
+                {
+                    getEdgesRecursively(child);
+                }
+                // Catch the root case of the recursion.
+                if (auto parent = vertex->getParent().lock())
+                {
+                    edges.emplace_back(parent->getState(), vertex->getState());
+                }
+            };
 
             // Get the edges of all reverse roots recursively.
             for (const auto &root : goalVertices_)
@@ -539,11 +540,11 @@ namespace ompl
                                           S_min_initial_, maxSamples_, minSamples_, spaceInfo_->getStateDimension());
                     unsigned int numSamples = adaptiveBatchSize_.adjustBatchSize(decay_method_);
                     setBatchSize(numSamples);
-                // if (solutionCost_.value() != lastsolutionCost_.value())
-                // {
-                //     lastsolutionCost_.setValue(solutionCost_.value());
+                    // if (solutionCost_.value() != lastsolutionCost_.value())
+                    // {
+                    //     lastsolutionCost_.setValue(solutionCost_.value());
                     // adjustRadiusFactor();
-                // }
+                    // }
                 }
             }
 
@@ -559,11 +560,11 @@ namespace ompl
             if (continueReverseSearch())
             {
                 // std::cout << graph_.getNumberOfSampledStates() << "hhhhhhhhhhhhhhhhhhhhhhh" << std::endl;
-                // std::cout << graph_.getNumberOfValidSamples() << "ggggggggggggggggggggg" << std::endl; 
+                // std::cout << graph_.getNumberOfValidSamples() << "ggggggggggggggggggggg" << std::endl;
 
-                std::vector<std::shared_ptr<State>> buffer = graph_.getValidSamples(); 
+                std::vector<std::shared_ptr<State>> buffer = graph_.getValidSamples();
                 std::vector<std::shared_ptr<State>> inValidBuffer = graph_.getInValidSamples();
-               
+
                 // for(auto validSample : buffer)
                 // {
                 //   //  std::cout << "ggggggggggggggggg" << validSample << std::endl;
@@ -574,7 +575,6 @@ namespace ompl
                 //    // std::cout << "iiiiiiiiiiiiiiiii" << invalidSample << std::endl;
                 // }
 
-               
                 iterateReverseSearch();
             }  // If the reverse search is suspended, check if the forward search needs to be continued.
             else if (continueForwardSearch())
@@ -662,10 +662,10 @@ namespace ompl
                     // Expand the outgoing edges into the queue unless this state is the goal state.
                     if (!graph_.isGoal(edge.target))
                     {
-                        auto edges = expand(edge.target,true);
-                        edges.erase(std::remove_if(
-                                        edges.begin(), edges.end(),
-                                        [&edge](const auto &e) { return e.target->getId() == edge.source->getId(); }),
+                        auto edges = expand(edge.target, true);
+                        edges.erase(std::remove_if(edges.begin(), edges.end(),
+                                                   [&edge](const auto &e)
+                                                   { return e.target->getId() == edge.source->getId(); }),
                                     edges.end());
                         forwardQueue_->insertOrUpdate(edges);
                     }
@@ -716,11 +716,11 @@ namespace ompl
             // The edge is a freeby if its parent is already the parent of the child.
             if (isInReverseTree(edge))
             {
-                auto outgoingEdges = expand(target,false);
-                outgoingEdges.erase(
-                    std::remove_if(outgoingEdges.begin(), outgoingEdges.end(),
-                                   [&source](const auto &e) { return e.target->getId() == source->getId(); }),
-                    outgoingEdges.end());
+                auto outgoingEdges = expand(target, false);
+                outgoingEdges.erase(std::remove_if(outgoingEdges.begin(), outgoingEdges.end(),
+                                                   [&source](const auto &e)
+                                                   { return e.target->getId() == source->getId(); }),
+                                    outgoingEdges.end());
 
                 // If there are no outoing edges from the target state, we can nosider it expanded.
                 if (outgoingEdges.empty())
@@ -775,7 +775,7 @@ namespace ompl
 
                     // Update the best effort estimate of the target state if this edge can improve it.
                     target->setEstimatedEffortToGo(std::min(effort, target->getEstimatedEffortToGo()));
-                  //  std::cout << "-------------" << effort << std::endl;
+                    //  std::cout << "-------------" << effort << std::endl;
 
                     // If this edge improves the reverse cost, update it.
                     if (graph_.isStart(target) && isBetter(target->getAdmissibleCostToGo(), reverseCost_))
@@ -790,11 +790,12 @@ namespace ompl
                     }
 
                     // Expand the target state into the reverse queue.
-                    auto outgoingEdges = expand(target,false);
+                    auto outgoingEdges = expand(target, false);
 
                     outgoingEdges.erase(
                         std::remove_if(outgoingEdges.begin(), outgoingEdges.end(),
-                                       [&source, this](const auto &e) {
+                                       [&source, this](const auto &e)
+                                       {
                                            if (e.target->getId() == source->getId())
                                            {
                                                return true;
@@ -936,7 +937,7 @@ namespace ompl
             }
             states.emplace_back(current);
             // Optimize the final path
-            //finalPathOptimize(states);
+            // finalPathOptimize(states);
 
             // Append all states to the path in correct order (starting from the start).
             auto path = std::make_shared<ompl::geometric::PathGeometric>(spaceInfo_);
@@ -1116,8 +1117,8 @@ namespace ompl
         {
             for (const auto &start : graph_.getStartStates())
             {
-                start->asForwardVertex()->callOnBranch(
-                    [this](const std::shared_ptr<fitstar::State> &state) -> void { updateApproximateSolution(state); });
+                start->asForwardVertex()->callOnBranch([this](const std::shared_ptr<fitstar::State> &state) -> void
+                                                       { updateApproximateSolution(state); });
             }
         }
 
@@ -1532,7 +1533,7 @@ namespace ompl
         {
             for (auto &vertex : startVertices_)
             {
-                forwardQueue_->insertOrUpdate(expand(vertex->getState(),true));
+                forwardQueue_->insertOrUpdate(expand(vertex->getState(), true));
             }
         }
 
@@ -1540,7 +1541,7 @@ namespace ompl
         {
             for (auto &vertex : goalVertices_)
             {
-                reverseQueue_->insertOrUpdate(expand(vertex->getState(),false));
+                reverseQueue_->insertOrUpdate(expand(vertex->getState(), false));
             }
         }
 
@@ -1599,7 +1600,7 @@ namespace ompl
                 return {};
             }
 
-            return expand(state,true);
+            return expand(state, true);
         }
 
         std::vector<Edge> FITstar::expand(const std::shared_ptr<State> &state, bool iterateForwardSearch) const
@@ -1611,10 +1612,29 @@ namespace ompl
             std::vector<Edge> outgoingEdges;
 
             // Get the neighbors in the current graph.
-            
-            for (const auto &neighborState : graph_.getAllNeighbors(state, graph_.getStartStates()[0], graph_.getGoalStates()[0], iterateForwardSearch))
+            if (iterateForwardSearch)
             {
-                outgoingEdges.emplace_back(state, neighborState.lock());
+                for (auto &neighborState : graph_.getAllNeighbors(state, graph_.getStartStates()[0],
+                                                                  graph_.getGoalStates()[0], iterateForwardSearch))
+                {
+                    double radius = graph_.getRadius();
+
+                    std::cout << radius << std::endl;
+                    if (graph_.isInEllipticalRange(state, neighborState, graph_.totalforceDirection_, radius))
+                        outgoingEdges.emplace_back(state, neighborState.lock());
+                }
+            }
+            else
+            {
+                for (auto &neighborState : graph_.getAllNeighbors(state, graph_.getStartStates()[0],
+                                                                  graph_.getGoalStates()[0], iterateForwardSearch))
+                {
+                    double radius = graph_.getRadius();
+
+                    std::cout << radius << std::endl;
+
+                    outgoingEdges.emplace_back(state, neighborState.lock());
+                }
             }
 
             // If the state is in the forward search tree, extra edges have to be added.

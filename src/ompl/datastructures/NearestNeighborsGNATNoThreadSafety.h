@@ -40,8 +40,11 @@
 #include "ompl/datastructures/NearestNeighbors.h"
 #include "ompl/datastructures/GreedyKCenters.h"
 #include "ompl/datastructures/Permutation.h"
+
+#include "ompl/base/spaces/RealVectorStateSpace.h"
 #ifdef GNAT_SAMPLER
 #include "ompl/datastructures/PDF.h"
+
 #endif
 #include "ompl/util/Exception.h"
 #include <unordered_set>
@@ -113,6 +116,13 @@ namespace ompl
             if (tree_)
                 rebuildDataStructure();
         }
+        //  void setDistanceFunction1(const typename NearestNeighbors<_T>::DistanceFunction1 &distFun) override
+        // {
+        //     NearestNeighbors<_T>::setDistanceFunction1(distFun);
+        //     pivotSelector_.setDistanceFunction1(distFun);
+        //     if (tree_)
+        //         rebuildDataStructure();
+        // }
 
         void clear() override
         {
@@ -234,11 +244,19 @@ namespace ompl
         //     }
         // }
 
-        // bool nearestKEllipticalInternal(const _T &data, const std::vector<double> &EllipticalDirection, size_t dimension, size_t k) const {
+        // void nearestKElliptical(const _T &data, 
+        //                     const std::vector<double> &EllipticalDirection, 
+        //                     size_t dimension, 
+        //                     size_t k, 
+        //                     std::vector<_T> &nbh) const {
+        // // 检查数据是否为 ompl::geometric::fitstar::State 类型
+        //     auto data = std::dynamic_pointer_cast<ompl::geometric::fitstar::State>(data);
         //     bool isPivot;
         //     Node *node;
 
         //     // 这里需要一个函数来计算椭圆距离
+
+            
         //     double distToPivot = calculateEllipticalDistance(data, tree_->pivot_, EllipticalDirection, dimension);
         //     isPivot = tree_->insertNeighborK(nearQueue_, k, tree_->pivot_, data, distToPivot);
         //     tree_->nearestKElliptical(*this, data, EllipticalDirection, dimension, k, isPivot);
@@ -256,16 +274,53 @@ namespace ompl
         //     return isPivot;
         // }
 
-        // // 你还需要实现这个函数来确定节点是否在椭圆范围内
-        // bool isNodeInEllipticalRange(const Node *node, const _T &data, const std::vector<double> &EllipticalDirection, size_t dimension) const {
-        //     // 实现检查逻辑
+        // // // 你还需要实现这个函数来确定节点是否在椭圆范围内
+        // // bool isNodeInEllipticalRange(const Node *node, const _T &data, const std::vector<double> &EllipticalDirection, size_t dimension) const {
+        // //     // 实现检查逻辑
 
-        // }
+        // // }
 
         // // 椭圆距离计算函数
-        // double calculateEllipticalDistance(const _T &point1, const _T &point2, const std::vector<double> &EllipticalDirection, size_t dimension) {
+        // double calculateEllipticalDistance(ompl::geometric::fitstar::State &state1, ompl::geometric::fitstar::State &state2, const std::vector<double> &EllipticalDirection, size_t dimension) {
         //     // 根据EllipticalDirection和dimension计算椭圆距离
-        // }
+        //      if (!state1)
+        //         {
+        //             throw std::invalid_argument("Provided state1 is null");
+        //         }
+
+        //         if (!state2)
+        //         {
+        //             throw std::invalid_argument("Provided state2 is null");
+        //         }
+
+                
+
+        //         auto cstate1 = state1->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
+
+        //         auto cstate2 = state2->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
+
+        //         if (!cstate1 || !cstate2)
+        //         {
+        //             throw std::runtime_error("rstate pointer is null");
+        //         }
+        //         double theta1 = 0., theta2 = 0., dx = 0., dy = 0., dist = 0.;
+
+
+        //         for (unsigned int i = 0; i < dimension; ++i)
+        //         {
+        //             theta1 += cstate1->values[i];
+        //             theta2 += cstate2->values[i];
+        //             dx += cos(theta1) - cos(theta2);
+        //             dy += sin(theta1) - sin(theta2);
+        //             //std::cout << "vector" << Vector[i] << std::endl;
+        //             dist += sqrt((dx * dx + dy * dy)/(EllipticalDirection[i]*EllipticalDirection[i]));
+        //         }
+
+        //         return dist;
+
+
+        //     }
+
 
 
         /// Return the nearest neighbors within distance \c radius in sorted order

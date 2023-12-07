@@ -107,6 +107,8 @@ namespace ompl
 
             double distance(const State *state1, const State *state2) const override;
 
+            //double dimensionwiseDistance(const State *state1, const State *state2, std::vector<double> ForceDirection) const override;
+
             bool equalStates(const State *state1, const State *state2) const override;
 
             void interpolate(const State *from, const State *to, double t, State *state) const override;

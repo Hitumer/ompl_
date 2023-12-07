@@ -206,7 +206,7 @@ namespace ompl
                 std::priority_queue<std::pair<double, std::shared_ptr<State>>,
                                     std::vector<std::pair<double, std::shared_ptr<State>>>,
                                     Compare> queue;
-
+                std::cout << "samples number :    " << Samples.size() << std::endl;
                 // Iterate over all samples and add them to the queue
                 for (const auto& sample : Samples) {
                     // Check if the current sample is not the same as the state
@@ -230,7 +230,7 @@ namespace ompl
                     }
                     nearest.push_back(currentSample);
                 }
-                std::cout << "numbre of nearest::" << nearest.size() << std::endl;
+                // std::cout << "numbre of nearest::" << nearest.size() << std::endl;
                 return nearest;
             }
 
@@ -305,11 +305,11 @@ namespace ompl
                    
                         // }
                                 for(int i = 0; i< totalForceVecwithStart.size();i++){ 
-                           std::cout << "totalForceVec from the points : " << totalForceVec[i]<< std::endl;
+                        //   std::cout << "totalForceVec from the points : " << totalForceVec[i]<< std::endl;
                    
                         }
                                 for(int i = 0; i< totalForceVecwithStart.size();i++){ 
-                            std::cout << "befor project totalForceVecwithStart : " << totalForceVecwithStart[i]<< std::endl;
+                         //   std::cout << "befor project totalForceVecwithStart : " << totalForceVecwithStart[i]<< std::endl;
                    
                         }
 
@@ -327,7 +327,7 @@ namespace ompl
                      
                         for(int i = 0; i< totalForceVecwithStart.size();i++){
                   
-                            std::cout << "after project totalForceVecwithStart: " << totalForceVecwithStart[i]<< std::endl;
+                        //    std::cout << "after project totalForceVecwithStart: " << totalForceVecwithStart[i]<< std::endl;
 
                         }
                 // for(int i = 0; i < dimension_; i++){
@@ -381,6 +381,7 @@ namespace ompl
                     //std::cout << "vector" << Vector[i] << std::endl;
                     dist += sqrt((dx * dx + dy * dy)/(Vector[i]*Vector[i]));
                 }
+                //std::cout << "dist:   " << dist << std::endl;
 
                 return dist;
 

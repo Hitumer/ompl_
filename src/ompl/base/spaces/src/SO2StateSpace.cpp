@@ -126,7 +126,15 @@ double ompl::base::SO2StateSpace::distance(const State *state1, const State *sta
                                                                          "ompl::base::StateValidityChecker");
     return (d > pi) ? 2.0 * pi - d : d;
 }
+// double ompl::base::SO2StateSpace::dimensionwiseDistance(const State *state1, const State *state2,
+//                                                                std::vector<double> ForceDirection) const
+// {
+//      double dist = 0.0;
 
+    
+
+//     return sqrt(dist);
+// }
 bool ompl::base::SO2StateSpace::equalStates(const State *state1, const State *state2) const
 {
     return fabs(state1->as<StateType>()->value - state2->as<StateType>()->value) <

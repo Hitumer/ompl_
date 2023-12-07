@@ -3,7 +3,7 @@
         "defaultRandomRectangles2D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 0.5,
+            "maxTime": 0.2,
             "dimensions": 2,
             "boundarySideLengths" : [ 1, 1 ],
             "start": [ -0.1, -0.1 ],

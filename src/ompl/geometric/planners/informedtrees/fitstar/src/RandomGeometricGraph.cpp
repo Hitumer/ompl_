@@ -47,7 +47,6 @@
 
 #include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
 
-
 namespace ompl
 {
     namespace geometric
@@ -91,9 +90,10 @@ namespace ompl
                     numInformedSamples = countSamplesInInformedSet();
                 }
                 // Update the radius by considering all informed states.
-                if (useKNearest_||useAllKNearest_)
+                if (useKNearest_)
                 {
                     numNeighbors_ = computeNumberOfNeighbors(numInformedSamples);
+                    std::cout << "numNeighbors_     :" << numNeighbors_ << std::endl;
                 }
                 else
                 {
@@ -338,9 +338,9 @@ namespace ompl
                             minPossibleCost_, objective_->motionCostHeuristic(start->raw(), goal->raw()));
                     }
                 }
-
                 std::vector<std::shared_ptr<State>> samples;
                 samples_.list(samples);
+
                 for (auto &state : samples)
                 {
                     initializeState(state);
@@ -356,6 +356,65 @@ namespace ompl
             {
                 radiusFactor_ = factor;
             }
+
+            void RandomGeometricGraph::setForceDirection(std::vector<double> &totalforceDirection) const
+            {
+                totalforceDirection_ = totalforceDirection;
+            }
+
+            bool RandomGeometricGraph::isInEllipticalRange(const std::shared_ptr<State> &state, const std::weak_ptr<State> &neighbor,
+                                     std::vector<double> &forceDirection, double Radius) const
+            {
+                if (!state)
+                {
+                    throw std::invalid_argument("Provided state or neighbor is null");
+                }
+
+                // 找出forceDirection中的最大值
+                double maxForceDirection = *std::max_element(forceDirection.begin(), forceDirection.end());
+
+                // 计算两个状态之间的椭圆距离
+                 if (!state)
+                {
+                    throw std::invalid_argument("Provided state1 is null");
+                }
+                auto state2_shared = neighbor.lock();
+
+                if (!state2_shared)
+                {
+                    throw std::invalid_argument("Provided state2 is null");
+                }
+
+                auto cstate1 = state->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
+                auto cstate2 = state2_shared->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
+
+                if (!cstate1 || !cstate2)
+                {
+                    throw std::runtime_error("rstate pointer is null");
+                }
+                double theta1 = 0., theta2 = 0., dx = 0., dy = 0., dist = 0.;
+
+
+                for (unsigned int i = 0; i < dimension_; ++i)
+                {
+                    theta1 += cstate1->values[i];
+                    theta2 += cstate2->values[i];
+                    dx += cos(theta1) - cos(theta2);
+                    dy += sin(theta1) - sin(theta2);
+                    //std::cout << "vector" << Vector[i] << std::endl;
+                    dist += sqrt((dx * dx + dy * dy)/(forceDirection[i]*forceDirection[i]));
+                }
+                //std::cout << "dist:   " << dist << std::endl;
+
+                // 判断是否在椭圆内
+                return dist <= Radius / maxForceDirection;
+            }
+
+            double RandomGeometricGraph::getRadius() const
+            {
+                return radius_;
+            }
+
 
             double RandomGeometricGraph::getRadiusFactor() const
             {
@@ -392,20 +451,22 @@ namespace ompl
                 return numValidSamples_;
             }
 
-            std::vector<std::shared_ptr<State>> RandomGeometricGraph::getValidSamples(){
-
+            std::vector<std::shared_ptr<State>> RandomGeometricGraph::getValidSamples()
+            {
                 return buffer_;
-            } 
+            }
 
-            std::vector<std::shared_ptr<State>> RandomGeometricGraph::getInValidSamples(){
-
+            std::vector<std::shared_ptr<State>> RandomGeometricGraph::getInValidSamples()
+            {
                 return InValidbuffer_;
-            } 
-            void RandomGeometricGraph::setBuffer(){
+            }
+            void RandomGeometricGraph::setBuffer()
+            {
                 buffer_.clear();
             }
 
-            void RandomGeometricGraph::setInValidbuffer(){
+            void RandomGeometricGraph::setInValidbuffer()
+            {
                 InValidbuffer_.clear();
             }
 
@@ -550,10 +611,10 @@ namespace ompl
                     } while (!spaceInfo_->isValid(state->raw()));
 
                     // We've found a valid sample.
-                    ++numValidSamples_;    
+                    ++numValidSamples_;
 
                     state->setAttractive();
-                    std::cout << state->isAttractive_ << std:: endl;
+                    std::cout << state->isAttractive_ << std::endl;
 
                     // and we add it to the buffer
                     buffer_.emplace_back(state);
@@ -596,7 +657,7 @@ namespace ompl
                             break;
                         }
                     } while (!terminationCondition);
-                // } while (newSamples_.size() < numNewStates && !terminationCondition);
+                    // } while (newSamples_.size() < numNewStates && !terminationCondition);
                 } while (newSamples_.size() < numNewStates);
 
                 // Add the new states to the samples.
@@ -647,7 +708,6 @@ namespace ompl
                 return false;
             }
 
-            
             std::shared_ptr<State> RandomGeometricGraph::getValidandInValidNewSample()
             {
                 // Allocate a new state.
@@ -662,45 +722,43 @@ namespace ompl
                 }
                 else
                 {
-                        if (isMultiqueryEnabled_)
-                        {
-                            // If we are doing multiquery planning, we sample uniformly, and reject samples that can
-                            // not improve the solution. This means that we need to sample the whole space, and add
-                            // the samples to the buffer
-                            sampler_->sampleUniform(state->raw(), objective_->infiniteCost());
-                        }
-                        else
-                        {
-                            // In case we are not doing multiquery planning, we can still directly sample the informed
-                            // set.
-                            sampler_->sampleUniform(state->raw(), solutionCost_);
-                        }
-                        if (!spaceInfo_->isValid(state->raw())){
-
-                             ++numInVaildSamples_;
-                            InValidbuffer_.emplace_back(state);
-                            ++numSampledStates_;
-                            return state;
-                        }
-                       
+                    if (isMultiqueryEnabled_)
+                    {
+                        // If we are doing multiquery planning, we sample uniformly, and reject samples that can
+                        // not improve the solution. This means that we need to sample the whole space, and add
+                        // the samples to the buffer
+                        sampler_->sampleUniform(state->raw(), objective_->infiniteCost());
+                    }
+                    else
+                    {
+                        // In case we are not doing multiquery planning, we can still directly sample the informed
+                        // set.
+                        sampler_->sampleUniform(state->raw(), solutionCost_);
+                    }
+                    if (!spaceInfo_->isValid(state->raw()))
+                    {
+                        ++numInVaildSamples_;
+                        InValidbuffer_.emplace_back(state);
+                        ++numSampledStates_;
+                        return state;
+                    }
 
                     // We've found a valid sample.
-                    else {
-                            ++numValidSamples_;    
+                    else
+                    {
+                        ++numValidSamples_;
 
-                            state->setAttractive();
-                            // and we add it to the buffer
-                            buffer_.emplace_back(state);
-                            ++currentNumSamples_;
-                             return state;
-                        }
+                        state->setAttractive();
+                        // and we add it to the buffer
+                        buffer_.emplace_back(state);
+                        ++currentNumSamples_;
+                        return state;
+                    }
                 }
-
-                
             }
 
-            bool RandomGeometricGraph::addVAlidandInvalidStates(std::size_t numNewStates,
-                                                 const ompl::base::PlannerTerminationCondition &terminationCondition)
+            bool RandomGeometricGraph::addVAlidandInvalidStates(
+                std::size_t numNewStates, const ompl::base::PlannerTerminationCondition &terminationCondition)
             {
                 // Assert sanity of used variables.
                 assert(sampler_);
@@ -720,7 +778,7 @@ namespace ompl
 
                         // Since we do not do informed sampling, we need to check if the sample could improve
                         // the current solution.
-                        if (!canBePruned(state)&& state->isAttractive_)
+                        if (!canBePruned(state) && state->isAttractive_)
                         {
                             newSamples_.emplace_back(state);
                             // Add this state to the goal states if it is a goal.
@@ -731,7 +789,7 @@ namespace ompl
                             break;
                         }
                     } while (!terminationCondition);
-                // } while (newSamples_.size() < numNewStates && !terminationCondition);
+                    // } while (newSamples_.size() < numNewStates && !terminationCondition);
                 } while (newSamples_.size() < numNewStates);
 
                 // Add the new states to the samples.
@@ -765,15 +823,16 @@ namespace ompl
                     newSamples_.clear();
 
                     // Update the radius by considering all informed states.
-                    if (useAllKNearest_ || useKNearest_) // 合并两个条件
+                    if (useAllKNearest_)  // 合并两个条件
                     {
                         numNeighbors_ = computeNumberOfNeighbors(numInformedSamples + numNewStates);
+                        radius_ = computeRadius(numInformedSamples + numNewStates);
+                        std::cout << "numNeighbors_     :" << numNeighbors_ << std::endl;
                     }
                     else
                     {
                         radius_ = computeRadius(numInformedSamples + numNewStates);
                     }
-
 
                     // Update the tag.
                     ++tag_;
@@ -807,26 +866,29 @@ namespace ompl
             {
                 useKNearest_ = useKNearest;
             }
+
+            void RandomGeometricGraph::setUseRNearest(bool useRNearest)
+            {
+                useRNearest_ = useRNearest;
+            }
             void RandomGeometricGraph::setAllUseKNearest(bool useAllKNearest)
             {
                 useAllKNearest_ = useAllKNearest;
             }
 
-            void ForceDirection(std::shared_ptr<State> state, std::vector<std::shared_ptr<State>> validSamples, std::vector<std::shared_ptr<State>> InvalidSamples){
-                  
-
+            void ForceDirection(std::shared_ptr<State> state, std::vector<std::shared_ptr<State>> validSamples,
+                                std::vector<std::shared_ptr<State>> InvalidSamples)
+            {
             }
 
-            void nearestKEllipse(std::shared_ptr<State> state,std::numeric_limits<std::size_t>k, std::vector<std::shared_ptr<State>> neighbors ){
-
-
-
-                   
-                
+            void nearestKEllipse(std::shared_ptr<State> state, std::numeric_limits<std::size_t> k,
+                                 std::vector<std::shared_ptr<State>> neighbors)
+            {
             }
 
-            void nearestK(std::shared_ptr<State> state,std::numeric_limits<std::size_t>k, std::vector<std::shared_ptr<State>> neighbors){
-
+            void nearestK(std::shared_ptr<State> state, std::numeric_limits<std::size_t> k,
+                          std::vector<std::shared_ptr<State>> neighbors)
+            {
             }
 
             bool RandomGeometricGraph::getUseKNearest() const
@@ -878,7 +940,7 @@ namespace ompl
                     else
                     {
                         samples_.nearestR(state, radius_, neighbors);
-                    }   
+                    }
                     // add whitelisted neighbours to the vector even if they are above the radius
                     if (isMultiqueryEnabled_)
                     {
@@ -949,8 +1011,9 @@ namespace ompl
                 return neighbors;
             }
 
-            std::vector<std::weak_ptr<State>>
-            RandomGeometricGraph::getAllNeighbors(const std::shared_ptr<State> &state, const std::shared_ptr<State> &startState, const std::shared_ptr<State> &goalState, bool iterateForwardSearch) const
+            std::vector<std::weak_ptr<State>> RandomGeometricGraph::getAllNeighbors(
+                const std::shared_ptr<State> &state, const std::shared_ptr<State> &startState,
+                const std::shared_ptr<State> &goalState, bool iterateForwardSearch) const
             {
                 assert(state);
 
@@ -974,32 +1037,29 @@ namespace ompl
                     // The cache is invalid, let's clear all vertices.
                     state->neighbors_.second.clear();
 
-                         //       std::cout << "-----------numNeighbors_:  " << numNeighbors_ << std::endl;
+                    //       std::cout << "-----------numNeighbors_:  " << numNeighbors_ << std::endl;
 
                     // Get the neighbors by performing a nearest neighbor search.
                     std::vector<std::shared_ptr<State>> neighbors;
                     std::vector<std::shared_ptr<State>> Knearestneighbors;
 
-
-                    if (useKNearest_)//(useKNearest_)
+                    if (useKNearest_)  //(useKNearest_)
                     {
                         samples_.nearestK(state, numNeighbors_, neighbors);
+                        std::cout << "-  samples_.nearestK:  " << numNeighbors_ << std::endl;
                     }
 
-
-                    else //(useAllKNearest_)
+                    else  //(useAllKNearest_)
                     {
+                        // std::vector<std::shared_ptr<State>> Samples;
 
-                            // std::vector<std::shared_ptr<State>> Samples;
+                        // Samples.insert(Samples.end(), buffer_.begin(), buffer_.end());
 
-                            // Samples.insert(Samples.end(), buffer_.begin(), buffer_.end());
+                        // Samples.insert(Samples.end(), InValidbuffer_.begin(), InValidbuffer_.end());
 
-                            // Samples.insert(Samples.end(), InValidbuffer_.begin(), InValidbuffer_.end());
+                        // std::cout << "-----------" << buffer_.size() << std::endl;
 
-                        std::cout << "-----------" << buffer_.size() << std::endl;
-
-                        std::cout << "-----------" << InValidbuffer_.size() << std::endl;
-
+                        // std::cout << "-----------" << InValidbuffer_.size() << std::endl;
 
                         std::vector<std::shared_ptr<State>> Allneighbors;
                         std::vector<std::shared_ptr<State>> temp_neighbors;
@@ -1008,159 +1068,175 @@ namespace ompl
 
                         std::vector<double> totalForceDirection3;
                         std::vector<double> totalForceDirection4;
+                        std::vector<double> totalForceDirection31;
 
-
-                        for (auto point : buffer_){
-                                Allneighbors.emplace_back(point);
-
+                        for (auto point : buffer_)
+                        {
+                            Allneighbors.emplace_back(point);
                         }
 
-
-                        for (auto point : InValidbuffer_){
-                                Allneighbors.emplace_back(point);
-
+                        for (auto point : InValidbuffer_)
+                        {
+                            Allneighbors.emplace_back(point);
                         }
 
-                            TotalForce totalforce(state, Allneighbors, dimension_);
+                        TotalForce totalforce(state, Allneighbors, dimension_);
 
-                            totalforce.totalForceVecwithStart_ = std::vector<double> (dimension_,1.0);
-                            //    std::cout << "-----------numNeighbors_:  " << numNeighbors_ << std::endl;
+                        totalforce.totalForceVecwithStart_ = std::vector<double>(dimension_, 1.0);
+                        //    std::cout << "-----------numNeighbors_:  " << numNeighbors_ << std::endl;
 
-                            totalForceDirection = totalforce.getValueofforceDirection();
+                        totalForceDirection = totalforce.getValueofforceDirection();
 
-                               for (int i= 0; i  < dimension_; i ++)
+                        for (int i = 0; i < dimension_; i++)
 
                             std::cout << "totalForceDirection1 :: " << totalForceDirection[i] << std::endl;
-                            temp_neighbors = totalforce.NearestEllipseticKSamples(state, totalForceDirection, Allneighbors,numNeighbors_, dimension_);
+                        temp_neighbors = totalforce.NearestEllipseticKSamples(state, totalForceDirection, Allneighbors,
+                                                                              numNeighbors_, dimension_);
 
-                            //    std::cout << "-----------temp_neig.size:  " << temp_neighbors.size() << "fffffffff:  "  << std::endl;
+                        //    std::cout << "-----------temp_neig.size:  " << temp_neighbors.size() << "fffffffff:  "  <<
+                        //    std::endl;
 
-                            // for(auto neighbor : temp_neighbors){
+                        // for(auto neighbor : temp_neighbors){
 
-                            //         std::cout <<  "distance :" << totalforce.distance(neighbor,state) << std::endl;
-                            //     }
+                        //         std::cout <<  "distance :" << totalforce.distance(neighbor,state) << std::endl;
+                        //     }
 
-                            totalforce.totalForce(state, temp_neighbors);
-                            totalforce.totalForcewithStart(state, startState, goalState,iterateForwardSearch);
+                        totalforce.totalForce(state, temp_neighbors);
+                        totalforce.totalForcewithStart(state, startState, goalState, iterateForwardSearch);
 
+                        // std::cout << "hdskjaghirfdjhgjih------" << numNeighbors_ << std::endl;
 
-
-
-                            //std::cout << "hdskjaghirfdjhgjih------" << numNeighbors_ << std::endl;
-
-                            // std::vector<std::shared_ptr<State>> knearestSamples = totalforce.NearestKSamples(state, eneighbors,numNeighbors_);
+                        // std::vector<std::shared_ptr<State>> knearestSamples = totalforce.NearestKSamples(state,
+                        // eneighbors,numNeighbors_);
 
                         // std::cout << "ggggggggggggggggg------" << knearestSamples.size() << std::endl;
 
-                            double ratio_temp =  totalforce.getRatioofValidInvalidPoints(temp_neighbors);
+                        double ratio_temp = totalforce.getRatioofValidInvalidPoints(temp_neighbors);
+                        for (int i = 0; i < dimension_; i++)
 
-                            totalForceDirection2 = totalforce.getValueofforceDirection();
-                            for (int i= 0; i  < dimension_; i ++)
+                            totalforce.totalForceVecwithStart_[i] = 1.0;
+
+                        totalForceDirection2 = totalforce.getValueofforceDirection();
+                        for (int i = 0; i < dimension_; i++)
 
                             std::cout << "totalForceDirection2:: " << totalForceDirection2[i] << std::endl;
 
-                            temp_neighbors = totalforce.NearestEllipseticKSamples(state, totalForceDirection2, Allneighbors,numNeighbors_, dimension_);
-                                
-                            totalforce.totalForce(state, temp_neighbors);
-                            totalforce.totalForcewithStart(state, startState, goalState,iterateForwardSearch);
+                        temp_neighbors = totalforce.NearestEllipseticKSamples(state, totalForceDirection2, Allneighbors,
+                                                                              numNeighbors_, dimension_);
 
+                        totalforce.totalForce(state, temp_neighbors);
+                        totalforce.totalForcewithStart(state, startState, goalState, iterateForwardSearch);
 
-                            double ratio =  totalforce.getRatioofValidInvalidPoints(temp_neighbors);
+                        double ratio = totalforce.getRatioofValidInvalidPoints(temp_neighbors);
 
-                            int iterations = 0;
-                            //  while (  ratio< ratio_temp && iterations < 2 )
-                             std::cout << "ratio  :" << ratio << std::endl;
-                                std::cout << "ratio_temp  :" << ratio_temp << std::endl;
+                        int iterations = 0;
+                        //  while (  ratio< ratio_temp && iterations < 2 )
+                        std::cout << "ratio  :" << ratio << std::endl;
+                        std::cout << "ratio_temp  :" << ratio_temp << std::endl;
 
+                        // while (iterations < 2 && ratio < ratio_temp)
+                        // {
+                        //     iterations++;
 
-                            while ( iterations < 2 ){              
+                        //     totalForceDirection3 = totalforce.getValueofforceDirection();
+                        //     totalForceDirection31 = totalForceDirection3;
+                        //     totalForceDirection31[0] = totalForceDirection3[1];
+                        //     totalForceDirection31[1] = -totalForceDirection3[0];
 
-                                iterations ++;
+                        //     for (int i = 0; i < dimension_; i++)
 
-                                totalForceDirection3 = totalforce.getValueofforceDirection();
+                        //         std::cout << "totalForceDirection3:: " << totalForceDirection3[i] << std::endl;
 
-                                   for (int i= 0; i  < dimension_; i ++)
+                        //     temp_neighbors = totalforce.NearestEllipseticKSamples(
+                        //         state, totalForceDirection3, Allneighbors, numNeighbors_, dimension_);
+                        //     // std::cout << "-----------temp_neighbors.size before:    " << temp_neighbors.size() <<
+                        //     // std::endl;
+                        //     //   for (auto it = temp_neighbors.begin(); it != temp_neighbors.end(); ) {
+                        //     //     // If the current element is not found in neighborsKnearest, remove it
+                        //     //     if (std::find(Knearestneighbors.begin(), Knearestneighbors.end(), *it) ==
+                        //     //     Knearestneighbors.end()) {
+                        //     //         it = temp_neighbors.erase(it);  // Remove the element and update the iterator
+                        //     //     } else {
+                        //     //         ++it;  // If found, continue to the next element
+                        //     //     }
+                        //     // }
 
-                                std::cout << "totalForceDirection3:: " << totalForceDirection3[i] << std::endl;
+                        //     //   std::cout << "-----------temp_neighbors.size after :    " << temp_neighbors.size()
+                        //     <<
+                        //     //   std::endl;
+                        //     // for(auto neighbor : temp_neighbors){
 
+                        //     //     std::cout <<  "distance :" << totalforce.distance(neighbor,state) << std::endl;
+                        //     // }
 
-                                temp_neighbors = totalforce.NearestEllipseticKSamples(state, totalForceDirection3, Allneighbors,numNeighbors_, dimension_);
-                                 // std::cout << "-----------temp_neighbors.size before:    " << temp_neighbors.size() << std::endl;
-                                //   for (auto it = temp_neighbors.begin(); it != temp_neighbors.end(); ) {
-                                //     // If the current element is not found in neighborsKnearest, remove it
-                                //     if (std::find(Knearestneighbors.begin(), Knearestneighbors.end(), *it) == Knearestneighbors.end()) {
-                                //         it = temp_neighbors.erase(it);  // Remove the element and update the iterator
-                                //     } else {
-                                //         ++it;  // If found, continue to the next element
-                                //     }
-                                // }
+                        //     totalforce.totalForce(state, temp_neighbors);
+                        //     totalforce.totalForcewithStart(state, startState, goalState, iterateForwardSearch);
 
+                        //     totalForceDirection4 = totalforce.getValueofforceDirection();
 
+                        //     // for (int i = 0; i < dimension_; i++)
 
-                             //   std::cout << "-----------temp_neighbors.size after :    " << temp_neighbors.size() << std::endl;
-                                // for(auto neighbor : temp_neighbors){
+                        //     //     std::cout << "totalForceDirection4:: " << totalForceDirection4[i] << std::endl;
 
-                                //     std::cout <<  "distance :" << totalforce.distance(neighbor,state) << std::endl;
-                                // }
+                        //     ratio_temp = ratio;
 
+                        //     ratio = totalforce.getRatioofValidInvalidPoints(temp_neighbors);
+                        //     std::cout << "ratio  :" << ratio << std::endl;
+                        //     std::cout << "ratio_temp  :" << ratio_temp << std::endl;
+                        // }
 
-                                totalforce.totalForce(state, temp_neighbors);
-                                totalforce.totalForcewithStart(state, startState, goalState, iterateForwardSearch);
+                        std::cout << "*************************************************" << std::endl;
 
-                                totalForceDirection4 = totalforce.getValueofforceDirection();
+                        bool removecircleSet = false;
 
-                                   for (int i= 0; i  < dimension_; i ++)
-
-                                std::cout << "totalForceDirection4:: " << totalForceDirection4[i] << std::endl;
-
-                                ratio_temp = ratio;
-
-                                ratio =  totalforce.getRatioofValidInvalidPoints(temp_neighbors);
-
-
-
-                            }
-
-                            std::cout << "*************************************************" << std::endl;
-
-                            bool  removecircleSet = false;
-
-                            if(!removecircleSet){
-
-                             for (auto it = temp_neighbors.begin(); it != temp_neighbors.end(); ) {
-                                    // If the current element is not found in neighborsKnearest, remove it
-                                    if (!(*it)->isAttractive_) {
-                                        it = temp_neighbors.erase(it);  // Remove the element and update the iterator
-                                    } else {
-                                        ++it;  // If found, continue to the next element
-                                    }
+                        if (!removecircleSet)
+                        {
+                            for (auto it = temp_neighbors.begin(); it != temp_neighbors.end();)
+                            {
+                                // If the current element is not found in neighborsKnearest, remove it
+                                if (!(*it)->isAttractive_)
+                                {
+                                    it = temp_neighbors.erase(it);  // Remove the element and update the iterator
+                                }
+                                else
+                                {
+                                    ++it;  // If found, continue to the next element
                                 }
                             }
-                            else{
-                            samples_.nearestK(state, numNeighbors_, Knearestneighbors);
-                            for (auto it = temp_neighbors.begin(); it != temp_neighbors.end(); ) {
-                                    // If the current element is not found in neighborsKnearest, remove it
-                                    if (std::find(Knearestneighbors.begin(), Knearestneighbors.end(), *it) == Knearestneighbors.end()) {
-                                        it = temp_neighbors.erase(it);  // Remove the element and update the iterator
-                                    } else {
-                                        ++it;  // If found, continue to the next element
-                                    }
+                        }
+                        else
+                        {
+                            samples_.nearestR(state, radius_, Knearestneighbors);
+                            for (auto it = temp_neighbors.begin(); it != temp_neighbors.end();)
+                            {
+                                // If the current element is not found in neighborsKnearest, remove it
+                                if (std::find(Knearestneighbors.begin(), Knearestneighbors.end(), *it) ==
+                                    Knearestneighbors.end())
+                                {
+                                    it = temp_neighbors.erase(it);  // Remove the element and update the iterator
+                                }
+                                else
+                                {
+                                    ++it;  // If found, continue to the next element
                                 }
                             }
+                        }
+                        // std::shared_ptr<ompl::geometric::fitstar::State> state_temp = state ;
+                        // for (int i = 0; i < dimension_; i++){
 
+                        //     state_temp->raw() = state[i] * totalForceDirection3[i];
+                        //     state->
+                        // }
 
-                            neighbors = temp_neighbors;
+                        samples_.nearestR(state, radius_, Knearestneighbors);
+                       
+                        setForceDirection(totalforce.totalForceVecwithStart_);
+
+                        neighbors = Knearestneighbors;
                         //    std::cout << "neighbors size:: " << neighbors.size() <<std::endl;
 
-
-                                //samples_.nearestR(state, radius_, neighbors);
+                        // samples_.nearestR(state, radius_, neighbors);
                     }
-
-
-
-
-
-
 
                     // add whitelisted neighbours to the vector even if they are above the radius
                     if (isMultiqueryEnabled_)

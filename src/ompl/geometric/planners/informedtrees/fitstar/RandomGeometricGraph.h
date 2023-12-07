@@ -126,10 +126,13 @@ namespace ompl
 
                 void setAllUseKNearest(bool useAllKNearest);
 
-                void nearestKEllipse(std::shared_ptr<State> state,std::numeric_limits<std::size_t>k, std::vector<std::shared_ptr<State>> neighbors);
+                void setUseRNearest(bool useRNearest);
 
-                void nearestK(std::shared_ptr<State> state,std::numeric_limits<std::size_t>k, std::vector<std::shared_ptr<State>> neighbors);
+                void nearestKEllipse(std::shared_ptr<State> state, std::numeric_limits<std::size_t> k,
+                                     std::vector<std::shared_ptr<State>> neighbors);
 
+                void nearestK(std::shared_ptr<State> state, std::numeric_limits<std::size_t> k,
+                              std::vector<std::shared_ptr<State>> neighbors);
 
                 /** \brief Returns whether the graph uses a k-nearest connection model. If false, it uses an r-disc
                  * model. */
@@ -146,8 +149,7 @@ namespace ompl
                                const ompl::base::PlannerTerminationCondition &terminationCondition);
 
                 bool addVAlidandInvalidStates(std::size_t numNewStates,
-                                const ompl::base::PlannerTerminationCondition &terminationCondition);
-
+                                              const ompl::base::PlannerTerminationCondition &terminationCondition);
 
                 /** \brief Prunes the graph of states that can not improve the current solution. */
                 void prune();
@@ -155,7 +157,10 @@ namespace ompl
                 /** \brief Returns the neighbors of a state. */
                 std::vector<std::weak_ptr<State>> getNeighbors(const std::shared_ptr<State> &state) const;
 
-                std::vector<std::weak_ptr<State>> getAllNeighbors(const std::shared_ptr<State> &state, const std::shared_ptr<State> &startState, const std::shared_ptr<State> &goalState, bool iterateForwardSearch) const;
+                std::vector<std::weak_ptr<State>> getAllNeighbors(const std::shared_ptr<State> &state,
+                                                                  const std::shared_ptr<State> &startState,
+                                                                  const std::shared_ptr<State> &goalState,
+                                                                  bool iterateForwardSearch) const;
 
                 /** \brief Returns the start states. */
                 const std::vector<std::shared_ptr<State>> &getStartStates() const;
@@ -187,6 +192,11 @@ namespace ompl
                 /** \brief Returns whether a goal state is available. */
                 bool hasGoalState() const;
 
+                bool isInEllipticalRange(const std::shared_ptr<State> &state, const std::weak_ptr<State> &neigbor,
+                                         std::vector<double> &forceDirection, double Radius) const;
+
+                double getRadius() const;
+
                 /** \brief Returns whether the given state is a start state. */
                 bool isStart(const std::shared_ptr<State> &state) const;
 
@@ -215,7 +225,12 @@ namespace ompl
                 /** \brief Returns the inadmissible effort to come. */
                 unsigned int inadmissibleEffortToCome(const std::shared_ptr<State> &state) const;
 
-                std::vector<double> totalforceDirection_{};
+                void setForceDirection(std::vector<double> &totalforceDirection) const;
+
+                mutable std::vector<double> totalforceDirection_;
+                std::vector<State> allSamples_{};
+
+               
 
             private:
                 /** \brief Returns a sample either from the buffer or a newly generated one. */
@@ -314,6 +329,8 @@ namespace ompl
                 /** \brief Whether to use a k-nearest RGG. If false, FIT* uses an r-disc RGG. */
                 bool useKNearest_{false};
 
+                bool useRNearest_{true};
+
                 bool useAllKNearest_{true};
 
                 /** \brief The maximum number of goals FIT* will sample explicitly from a sampleable goal region. */
@@ -327,7 +344,7 @@ namespace ompl
                 std::size_t k_rgg_{std::numeric_limits<std::size_t>::max()};
 
                 /** \brief The connection radius of the RGG. */
-                double radius_{std::numeric_limits<double>::infinity()};
+                 double radius_{std::numeric_limits<double>::infinity()};
 
                 /** \brief The factor by which to scale the connection radius (eta in the paper). */
                 double radiusFactor_{1.001};
@@ -354,7 +371,6 @@ namespace ompl
                 mutable unsigned int numValidSamples_{0u};
 
                 mutable unsigned int numInVaildSamples_{0u};
-                
 
                 /** \brief The number of valid samples. */
                 mutable unsigned int numNearestNeighborCalls_{0u};
