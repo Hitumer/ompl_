@@ -13,7 +13,7 @@
                 "useKNearest": false,
                 "useRNearest": true,
                 "useAllKNearest": true,
-                "useAdaptiveBatchSize": true,
+                "useAdaptiveBatchSize": false,
                 "enablePruning": true,
                 "trackApproximateSolutions": false,
                 "repairReverseSearchTreeUponCollisionDetection": false,

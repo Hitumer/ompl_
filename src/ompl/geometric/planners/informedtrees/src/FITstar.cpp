@@ -42,6 +42,7 @@
 #include "ompl/base/objectives/PathLengthOptimizationObjective.h"
 #include "ompl/geometric/PathGeometric.h"
 #include "ompl/geometric/planners/informedtrees/fitstar/AdaptiveBatchSize.h"
+#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
 
 using namespace std::string_literals;
 using namespace ompl::geometric::fitstar;
@@ -828,10 +829,10 @@ namespace ompl
             // Add new states, also prunes states if enabled. The method returns true if all states have been added.
             if (graph_.addVAlidandInvalidStates(batchSize_, terminationCondition))
             {
-                // Reset the reverse collision detection.
-                std::cout << "__________________" << graph_.getValidSamples().size() << std::endl;
+                // // Reset the reverse collision detection.
+                // std::cout << "__________________" << graph_.getValidSamples().size() << std::endl;
 
-                std::cout << "__________________" << graph_.getInValidSamples().size() << std::endl;
+                // std::cout << "__________________" << graph_.getInValidSamples().size() << std::endl;
                 numSparseCollisionChecksCurrentLevel_ = initialNumSparseCollisionChecks_;
                 numSparseCollisionChecksPreviousLevel_ = 0u;
 
@@ -1607,7 +1608,6 @@ namespace ompl
         {
             // Only states associated with a vertex in either of the trees should be expanded.
             assert(state->hasForwardVertex() || state->hasReverseVertex());
-
             // Prepare the return variable.
             std::vector<Edge> outgoingEdges;
 
@@ -1617,12 +1617,21 @@ namespace ompl
                 for (auto &neighborState : graph_.getAllNeighbors(state, graph_.getStartStates()[0],
                                                                   graph_.getGoalStates()[0], iterateForwardSearch))
                 {
+                    // std::vector<std::shared_ptr<State>> Allneighbors;
+                    // Allneighbors.emplace_back(neighborState.lock());
+                    // totalForce_.totalForce(state, Allneighbors);
+                    // totalForce_.totalForcewithStart(state, graph_.getStartStates()[0], graph_.getGoalStates()[0],
+                    // true);
                     double radius = graph_.getRadius();
-
-                    std::cout << radius << std::endl;
-                    if (graph_.isInEllipticalRange(state, neighborState, graph_.totalforceDirection_, radius))
+                    //if (graph_.isInEllipticalRange(state, neighborState, graph_.totalforceDirection_, radius))
                         outgoingEdges.emplace_back(state, neighborState.lock());
                 }
+
+                // double radius = graph_.getRadius();
+                // std::cout << "forward radius: "<< radius << std::endl;
+                for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
+
+                    std::cout << "forward graph_.totalforceDirection_:: " << graph_.totalforceDirection_[i] << std::endl;
             }
             else
             {
@@ -1631,10 +1640,16 @@ namespace ompl
                 {
                     double radius = graph_.getRadius();
 
-                    std::cout << radius << std::endl;
-
-                    outgoingEdges.emplace_back(state, neighborState.lock());
+                    // std::cout << radius << std::endl;
+                    //if (graph_.isInEllipticalRange(state, neighborState, graph_.totalforceDirection_, radius))
+                        outgoingEdges.emplace_back(state, neighborState.lock());
                 }
+                // double radius = graph_.getRadius();
+                // std::cout << "reverse radius: "<< radius << std::endl;
+                
+                for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
+
+                    std::cout << "reverse graph_.totalforceDirection_:: " << graph_.totalforceDirection_[i] << std::endl;
             }
 
             // If the state is in the forward search tree, extra edges have to be added.

@@ -689,9 +689,9 @@ namespace ompl
                     std::vector<std::shared_ptr<State>> neighbors;
                     if (useKNearest_)
                     {
-                        std::cout << "numNeighbors_ :   " << numNeighbors_ << std::endl;
+                        // std::cout << "numNeighbors_ :   " << numNeighbors_ << std::endl;
                         samples_.nearestK(state, numNeighbors_, neighbors);
-                        std::cout << "neighbors :   " << neighbors.size() << std::endl;
+                        // std::cout << "neighbors :   " << neighbors.size() << std::endl;
                     }
                     else
                     {

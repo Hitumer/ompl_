@@ -26,8 +26,8 @@ namespace ompl
             {
             public:
                 /** \brief Constructs the vertex, which must be associated with a state. */
-                TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &states,
-                                const double &dim);
+                TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &Allneigbors, size_t dimension_
+                           );
 
                 /** \brief Destructs this vertex. */
                 ~TotalForce();
@@ -41,27 +41,30 @@ namespace ompl
                 std::vector<std::shared_ptr<State>> getStates() const;
 
                 /** \brief Return the std::vector<double> by two states */
-                std::vector<double> getVector(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const;
+                std::vector<double> getVector(const std::shared_ptr<State> state1,
+                                              const std::shared_ptr<State> state2) const;
 
                 double distance(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const;
 
-                std::vector<std::shared_ptr<State>> NearestKSamples(const std::shared_ptr<State> state, std::vector<std::shared_ptr<State>> Samples,int k);
+                std::vector<std::shared_ptr<State>> NearestKSamples(const std::shared_ptr<State> state,
+                                                                    std::vector<std::shared_ptr<State>> Samples, int k);
 
-                std::vector<std::shared_ptr<State>> NearestEllipseticKSamples(
-                const std::shared_ptr<State> state,
-                const std::vector<double> &totalForceVec,
-                std::vector<std::shared_ptr<State>> &Samples,
-                int k, std::size_t dimension_);
+                std::vector<std::shared_ptr<State>>
+                NearestEllipseticKSamples(const std::shared_ptr<State> state, std::vector<double> &ForceDirection,
+                                          std::vector<std::shared_ptr<State>> &Samples, int k, std::size_t dimension_);
 
-                double calculateEllipticalDistance(const std::shared_ptr<State>& state1, 
-                                            const std::shared_ptr<State>& state2, 
-                                            const std::vector<double>& totalForceVec, std::size_t dimension_);
+                double calculateEllipticalDistance(const std::shared_ptr<State> &state1,
+                                                   const std::shared_ptr<State> &state2,
+                                                   std::vector<double> &totalForceVec, std::size_t dimension_);
 
-                std::vector<double> force(const std::shared_ptr<State>& state1, const std::shared_ptr<State>& state2);
+                std::vector<double> force(const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2);
 
-                void totalForce(const std::shared_ptr<State>& currentState, const std::vector<std::shared_ptr<State>>& Samples);
-                
-                void totalForcewithStart(const std::shared_ptr<State>& currentState, const std::shared_ptr<State>& startstate,  const std::shared_ptr<State>& goalstate, bool iterateForwardSearch);
+                void totalForce(const std::shared_ptr<State> &currentState,
+                                const std::vector<std::shared_ptr<State>> &Samples);
+
+                void totalForcewithStart(const std::shared_ptr<State> &currentState,
+                                         const std::shared_ptr<State> &startstate,
+                                         const std::shared_ptr<State> &goalstate, bool iterateForwardSearch);
 
                 /** \brief Return the norm of two states */
                 double getNorm(const std::vector<double> &v) const;
@@ -69,7 +72,7 @@ namespace ompl
                 /** \brief Return the dot product of two Vectors */
                 double dotProduct(const std::vector<double> &v1, const std::vector<double> &v2) const;
 
-                std::vector<double> vectorProjection(const std::vector<double>& a, const std::vector<double>& b);
+                std::vector<double> vectorProjection(const std::vector<double> &a, const std::vector<double> &b);
 
                 /** \brief normalize the vector */
                 std::vector<double> normalize(const std::vector<double> &v) const;
@@ -94,23 +97,21 @@ namespace ompl
                 void clearNeighbors();
 
                 double getRatioofValidInvalidPoints(std::vector<std::shared_ptr<State>> states);
-                
+
                 std::size_t dimension_;
 
-                double totalMagnitude_;
+                mutable double totalMagnitude_;
 
-                std::vector<double> totalForceVec_;
+                mutable std::vector<double> totalForceVec_;
 
-                double totalMagnitudewithStart_;
+                mutable double totalMagnitudewithStart_;
 
-                void settotalForcewithStartValue(std::vector<double>& totalForceVecWithStart);
+                void settotalForcewithStartValue(std::vector<double> &totalForceVecWithStart);
 
-                std::vector<double> totalForceVecwithStart_;
+                mutable std::vector<double> totalForceVecwithStart_;
 
                 /** \brief small parameter */
                 const double epsilon_ = 1e-9;
-
-                ompl::base::Cost DirectionCost_;
 
                 std::vector<double> getValueofforceDirection();
 
@@ -122,7 +123,6 @@ namespace ompl
                 std::vector<std::shared_ptr<State>> states_;
 
                 /** \brief The dimension of the state */
-                
 
                 /** \brief state lock */
                 std::mutex state_mutex_;
@@ -133,8 +133,7 @@ namespace ompl
     }  // namespace geometric
 
 }  // namespace ompl
-inline std::vector<double> operator-(const std::vector<double> &lhs,
-                                     const std::vector<double> &rhs)
+inline std::vector<double> operator-(const std::vector<double> &lhs, const std::vector<double> &rhs)
 {
     assert(lhs.size() == rhs.size() && "Vectors must be of the same size for subtraction!");
 
@@ -147,8 +146,7 @@ inline std::vector<double> operator-(const std::vector<double> &lhs,
 }
 
 // 向量加法运算符重载
-inline std::vector<double> operator+(const std::vector<double> &lhs,
-                                     const std::vector<double> &rhs)
+inline std::vector<double> operator+(const std::vector<double> &lhs, const std::vector<double> &rhs)
 {
     assert(lhs.size() == rhs.size() && "Vectors must be of the same size for addition!");
 
@@ -183,6 +181,5 @@ inline std::vector<double> operator/(const std::vector<double> &lhs, double scal
     }
     return result;
 }
-
 
 #endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_TOTALFORCE_

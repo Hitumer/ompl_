@@ -5,7 +5,7 @@
             "defaultFITstar",
             "defaultEITstar"
         ],
-        "context": "defaultWallGap2D",
+        "context": "defaultRandomRectangles8D",
         "numRuns": 35,
         "logFrequency": 10000,
         "loadDefaultContextConfig": true,

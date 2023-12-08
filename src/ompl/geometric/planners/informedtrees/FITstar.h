@@ -45,6 +45,8 @@
 
 #include "ompl/geometric/PathGeometric.h"
 #include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+
 #include "ompl/geometric/planners/informedtrees/fitstar/RandomGeometricGraph.h"
 #include "ompl/geometric/planners/informedtrees/fitstar/ForwardQueue.h"
 #include "ompl/geometric/planners/informedtrees/fitstar/ReverseQueue.h"
@@ -347,10 +349,10 @@ namespace ompl
             void expandGoalVerticesIntoReverseQueue();
 
             /** \brief The sampling-based approximation of the state space. */
-            fitstar::RandomGeometricGraph graph_;
+            mutable fitstar::RandomGeometricGraph graph_;
 
             /** \brief The number of states added when the approximation is updated. */
-            unsigned int batchSize_{199u};
+            unsigned int batchSize_{299u};
 
             /** \brief Whether to use a adaptive batch size RGG. If false, FIT* uses an static batchsize. */
             bool useAdaptiveBatchSize_{true};
@@ -362,7 +364,7 @@ namespace ompl
             double S_min_initial_{0.0};
 
             /** \brief Max sample numbers */
-            const unsigned int maxSamples_{399u};
+            const unsigned int maxSamples_{599u};
 
             /** \brief Min sample numbers */
             const unsigned int minSamples_{1u};

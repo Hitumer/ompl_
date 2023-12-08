@@ -30,3 +30,8 @@ std::cout << "-------------" << << std::endl;
 getnewsample之后，sample_存储tree的消息，之后要怎么使用？？？？
 
 再进入iterate reversesearch  expand其中target， 找到getallneighbors的点。 其中用到 sample_ tree的信息。
+
+
+ "seed": 18439222748601236750,
+  "seed": 18439222748686676701,
+      "seed": 18439222748920832312,
