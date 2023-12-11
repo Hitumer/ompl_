@@ -26,8 +26,8 @@ namespace ompl
             {
             public:
                 /** \brief Constructs the vertex, which must be associated with a state. */
-                TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &Allneigbors, size_t dimension_
-                           );
+                TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &Allneigbors,
+                           size_t dimension_);
 
                 /** \brief Destructs this vertex. */
                 ~TotalForce();
@@ -145,7 +145,6 @@ inline std::vector<double> operator-(const std::vector<double> &lhs, const std::
     return result;
 }
 
-// 向量加法运算符重载
 inline std::vector<double> operator+(const std::vector<double> &lhs, const std::vector<double> &rhs)
 {
     assert(lhs.size() == rhs.size() && "Vectors must be of the same size for addition!");
@@ -157,8 +156,6 @@ inline std::vector<double> operator+(const std::vector<double> &lhs, const std::
     }
     return result;
 }
-
-// 向量与标量的乘法运算符重载
 inline std::vector<double> operator*(const std::vector<double> &lhs, double scalar)
 {
     std::vector<double> result(lhs.size());
@@ -168,8 +165,6 @@ inline std::vector<double> operator*(const std::vector<double> &lhs, double scal
     }
     return result;
 }
-
-// 向量与标量的除法运算符重载
 inline std::vector<double> operator/(const std::vector<double> &lhs, double scalar)
 {
     assert(scalar != 0 && "Cannot divide by zero!");

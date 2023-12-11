@@ -3,7 +3,7 @@
         "defaultRandomRectangles2D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 0.2,
+            "maxTime": 1.0,
             "dimensions": 2,
             "boundarySideLengths" : [ 1, 1 ],
             "start": [ -0.1, -0.1 ],
@@ -17,7 +17,7 @@
         "defaultRandomRectangles3D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 0.6,
+            "maxTime": 0.4,
             "dimensions": 3,
             "boundarySideLengths" : [ 1, 1, 1 ],
             "start": [ -0.1, -0.1, -0.1 ],
@@ -31,7 +31,7 @@
         "defaultRandomRectangles4D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 1.2,
+            "maxTime": 0.5,
             "dimensions": 4,
             "boundarySideLengths" : [ 1, 1, 1, 1 ],
             "start": [ -0.1, -0.1, -0.1, -0.1 ],
@@ -45,7 +45,7 @@
         "defaultRandomRectangles8D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 3.0,
+            "maxTime": 1.0,
             "dimensions": 8,
             "boundarySideLengths" : [ 1, 1, 1, 1, 1, 1, 1, 1 ],
             "start": [ -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1 ],
@@ -59,7 +59,7 @@
         "defaultRandomRectangles16D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 5.0,
+            "maxTime": 3.0,
             "dimensions": 16,
             "boundarySideLengths" : [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
             "start": [ -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1 ],
@@ -73,7 +73,7 @@
         "defaultRandomRectangles32D": {
             "type": "RandomRectangles",
             "objective": "defaultPathLength",
-            "maxTime": 0.5,
+            "maxTime": 5.0,
             "dimensions": 32,
             "boundarySideLengths" : [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
             "start": [ -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1 ],

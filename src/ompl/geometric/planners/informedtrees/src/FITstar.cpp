@@ -566,16 +566,6 @@ namespace ompl
                 std::vector<std::shared_ptr<State>> buffer = graph_.getValidSamples();
                 std::vector<std::shared_ptr<State>> inValidBuffer = graph_.getInValidSamples();
 
-                // for(auto validSample : buffer)
-                // {
-                //   //  std::cout << "ggggggggggggggggg" << validSample << std::endl;
-                // }
-
-                // for(auto invalidSample : inValidBuffer)
-                // {
-                //    // std::cout << "iiiiiiiiiiiiiiiii" << invalidSample << std::endl;
-                // }
-
                 iterateReverseSearch();
             }  // If the reverse search is suspended, check if the forward search needs to be continued.
             else if (continueForwardSearch())
@@ -1629,9 +1619,9 @@ namespace ompl
 
                 // double radius = graph_.getRadius();
                 // std::cout << "forward radius: "<< radius << std::endl;
-                for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
+                // for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
 
-                    std::cout << "forward graph_.totalforceDirection_:: " << graph_.totalforceDirection_[i] << std::endl;
+                //     std::cout << "forward forceDirection  " << i << ": "<< graph_.totalforceDirection_[i] << std::endl;
             }
             else
             {
@@ -1647,9 +1637,9 @@ namespace ompl
                 // double radius = graph_.getRadius();
                 // std::cout << "reverse radius: "<< radius << std::endl;
                 
-                for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
+                // for (int i = 0; i < graph_.totalforceDirection_.size(); i++)
 
-                    std::cout << "reverse graph_.totalforceDirection_:: " << graph_.totalforceDirection_[i] << std::endl;
+                //     std::cout << "reverse graph_.totalforceDirection_:: " << graph_.totalforceDirection_[i] << std::endl;
             }
 
             // If the state is in the forward search tree, extra edges have to be added.

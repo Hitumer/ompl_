@@ -3,10 +3,13 @@
         "executable": "benchmark",
         "planners": [
             "defaultFITstar",
-            "defaultEITstar"
+            "defaultEITstar",
+            "defaultABITstar",
+            "defaultBITstar",
+            "defaultInformedRRTstar"
         ],
-        "context": "defaultRandomRectangles8D",
-        "numRuns": 35,
+        "context": "defaultRandomRectangles4D",
+        "numRuns": 100,
         "logFrequency": 10000,
         "loadDefaultContextConfig": true,
         "loadDefaultObjectiveConfig": true,

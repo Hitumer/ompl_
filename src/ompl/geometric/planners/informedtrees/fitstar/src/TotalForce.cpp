@@ -2,11 +2,10 @@
 #include <memory>
 #include <queue>
 #include <functional>
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
-
 #include <algorithm>
 #include <limits>
 
+#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
 #include "ompl/geometric/planners/informedtrees/fitstar/State.h"
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 
@@ -16,19 +15,21 @@ namespace ompl
     {
         namespace fitstar
         {
-
+            // Constructor for TotalForce class
             TotalForce::TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &states,
                                    size_t dimension)
               : state_(state), states_(states), dimension_(dimension)
             {
             }
 
+            // Destructor for TotalForce class
             TotalForce::~TotalForce()
             {
             }
 
             typedef std::vector<double> Vector;
 
+            // Set the current state
             void TotalForce::setState(const std::shared_ptr<State> &state)
             {
                 if (!state)
@@ -42,16 +43,19 @@ namespace ompl
                 return;
             }
 
+            // Get the current state
             std::shared_ptr<State> TotalForce::getState() const
             {
                 return state_;
             }
 
+            // Get all states
             std::vector<std::shared_ptr<State>> TotalForce::getStates() const
             {
                 return states_;
             }
 
+            // Get vector between two states
             Vector TotalForce::getVector(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const
             {
                 if (!state1)
@@ -82,6 +86,7 @@ namespace ompl
                 return vector;
             }
 
+            // Calculate the distance between two states
             double TotalForce::distance(const std::shared_ptr<State> state1, const std::shared_ptr<State> state2) const
             {
                 if (!state1)
@@ -115,6 +120,7 @@ namespace ompl
                 return dist;
             }
 
+            // Comparator for priority queue
             struct Compare
             {
                 bool operator()(const std::pair<double, std::shared_ptr<State>> &a,
@@ -124,6 +130,7 @@ namespace ompl
                 }
             };
 
+            // Find nearest K samples to a given state
             std::vector<std::shared_ptr<State>> TotalForce::NearestKSamples(const std::shared_ptr<State> state,
                                                                             std::vector<std::shared_ptr<State>> Samples,
                                                                             int k)
@@ -132,14 +139,14 @@ namespace ompl
                                     std::vector<std::pair<double, std::shared_ptr<State>>>, Compare>
                     pq;
 
-                // 遍历所有样本，计算与给定状态的距离，并存储在优先队列中
+                // Iterate through all samples, calculate distance to the given state, and store in priority queue
                 for (const auto &sample : Samples)
                 {
                     double dist = distance(state, sample);
                     pq.push({dist, sample});
                 }
 
-                // 从队列中取出最近的 k 个样本
+                // Extract nearest k samples from the queue
                 std::vector<std::shared_ptr<State>> nearest;
                 for (int i = 0; i < k && !pq.empty(); ++i)
                 {
@@ -150,17 +157,19 @@ namespace ompl
                 return nearest;
             }
 
+            // Calculate force between two states
             std::vector<double> TotalForce::force(const std::shared_ptr<State> &state1,
                                                   const std::shared_ptr<State> &state2)
             {
-                // 获取两状态之间的向量
+                // Retrieve the vector between two states
                 std::vector<double> vec = getVector(state1, state2);
-                // 计算距离
+                // Calculate the distance
                 double dist = distance(state1, state2);
 
-                // 库伦定律：F = k * (1 / r^2)
+                // Coulomb's Law: F = k * (1 / r^2)
                 double magnitude = 1.0 / (dist * dist);
-                magnitude = state2->isAttractive_ ? magnitude : -magnitude;  // 引力为正，斥力为负
+                magnitude =
+                    state2->isAttractive_ ? magnitude : -magnitude;  // Attractive force positive, repulsive negative
 
                 for (size_t i = 0; i < vec.size(); ++i)
                 {
@@ -170,6 +179,7 @@ namespace ompl
                 return vec;
             }
 
+            // Calculate the total force acting on the current state from all samples
             void TotalForce::totalForce(const std::shared_ptr<State> &currentState,
                                         const std::vector<std::shared_ptr<State>> &Samples)
             {
@@ -179,7 +189,6 @@ namespace ompl
                 {
                     totalForceVec_ = totalForceVec;
                 }
-
                 else
                 {
                     for (const auto &sample : Samples)
@@ -196,7 +205,6 @@ namespace ompl
                         totalMagnitude += totalForceVec[i] * totalForceVec[i];
                     }
                     totalMagnitude = sqrt(totalMagnitude);
-
                     totalMagnitude_ = totalMagnitude;
 
                     for (double elem : totalForceVec)
@@ -209,77 +217,65 @@ namespace ompl
                             totalForceVec_ = totalForceVec;
                     }
                 }
-                // 计算有效样本的引力
-
-                // 打印合力的大小和方向（如果dimension_为2）
-
-                // std::cout << "_________Total Force Magnitude: " << totalMagnitude << std::endl;
-                // for(int i = 0; i< totalForceVec.size();i++)
-                // std::cout << "_________Total Force Magnitude Direction: " << totalForceVec[i]/totalMagnitude <<
-                // std::endl;
+             
             }
-
+            // Find the nearest k samples in an ellipsoidal space
             std::vector<std::shared_ptr<State>> TotalForce::NearestEllipseticKSamples(
                 const std::shared_ptr<State> state, std::vector<double> &totalForceVec,
                 std::vector<std::shared_ptr<State>> &Samples, int k, std::size_t dimension_)
             {
-                // Define a priority queue for all samples
+                // Initialize a priority queue to store samples based on their distance
                 std::priority_queue<std::pair<double, std::shared_ptr<State>>,
                                     std::vector<std::pair<double, std::shared_ptr<State>>>, Compare>
                     queue;
-                // std::cout << "samples number :    " << Samples.size() << std::endl;
-                // Iterate over all samples and add them to the queue
-             
 
+                // Iterate over all samples
                 for (const auto &sample : Samples)
                 {
-                    // Check if the current sample is not the same as the state
+                    // Exclude the current state from consideration
                     if (sample != state)
                     {
                         double dist = calculateEllipticalDistance(state, sample, totalForceVec, dimension_);
-                        // std::cout << "________dist ::  " << dist << std:: endl;
+                        // Add sample to the queue if it's within a finite distance
                         if (dist <= INFINITY)
                         {
                             queue.push(std::make_pair(dist, sample));
                         }
                     }
                 }
-                // Extract samples until K positive ones are found
+
+                // Extract the nearest k samples from the queue
                 std::vector<std::shared_ptr<State>> nearest;
-                int positiveCount = 0;
+                int positiveCount = 0;  // Count of positive (attractive) samples found
 
                 while (!queue.empty() && positiveCount < k)
                 {
                     auto currentSample = queue.top().second;
                     queue.pop();
+                    // Count only attractive samples
                     if (currentSample->isAttractive_)
                     {
                         positiveCount++;
                     }
                     nearest.push_back(currentSample);
                 }
-                // std::cout << "numbre of nearest::" << nearest.size() << std::endl;
+
                 return nearest;
             }
-
-            //  void TotalForce::settotalForcewithStartValue(std::vector<double>& totalForceVecWithStart){
-
-            //     totalForceVecWithStart_ = totalForceVecWithStart;
-
-            //  }
 
             void TotalForce::totalForcewithStart(const std::shared_ptr<State> &currentState,
                                                  const std::shared_ptr<State> &startstate,
                                                  const std::shared_ptr<State> &goalstate, bool iterateForwardSearch)
             {
+                // Initialize force vectors for single force and total force with start
                 std::vector<double> singleForceVec(dimension_, 0.0);
                 std::vector<double> totalForceVecwithStart(dimension_, 0.0);
                 std::vector<double> totalForceVec = totalForceVec_;
 
+                // Calculate the force vector if iterating forward
                 if (iterateForwardSearch)
                 {
                     goalstate->setAttractive();
-                    // 计算有效样本的引力
                     if (currentState == goalstate)
                     {
                         singleForceVec = singleForceVec;
@@ -287,22 +283,16 @@ namespace ompl
                     else
                     {
                         auto f = force(currentState, goalstate);
-
                         singleForceVec = normalize(f);
                         for (auto &element : singleForceVec)
                         {
                             element *= 1;
                         }
                     }
-
-                    // for(int i = 0; i< singleForceVec.size();i++)
-                    //     std::cout << "singleForceVec : " << singleForceVec[i]<< std::endl;
                 }
-
-                else
+                else  // Calculate the force vector if iterating backward
                 {
                     startstate->setAttractive();
-                    // 计算有效样本的引力
                     if (currentState == startstate)
                     {
                         singleForceVec = singleForceVec;
@@ -310,151 +300,102 @@ namespace ompl
                     else
                     {
                         auto f = force(currentState, startstate);
-
                         singleForceVec = normalize(f);
-
                         for (auto &element : singleForceVec)
                         {
                             element *= 1;
                         }
                     }
                 }
-                for (int i = 0; i < totalForceVecwithStart.size(); i++)
-                {
-                    //     std::cout << "singleForceVec to start/goal:: " <<  singleForceVec[i] << std:: endl;
-                }
 
-                // totalForceVecwithStart = normalize(singleForceVec + totalForceVec);
-                totalForceVecwithStart = normalize( totalForceVec);
+                // Combine and normalize the total force vector with the start force vector
+                totalForceVecwithStart = normalize(singleForceVec + totalForceVec);
 
-
+                // Calculate vectors from goal to start and vice versa
                 std::vector<double> vectorgoaltostart = getVector(goalstate, startstate);
                 vectorgoaltostart = normalize(vectorgoaltostart);
                 std::vector<double> vectorstarttogoal = getVector(startstate, goalstate);
                 vectorstarttogoal = normalize(vectorstarttogoal);
 
-                //  for(int i = 0; i< totalForceVecwithStart.size();i++){
-                //     std::cout << "_________vectorgoaltostart : " << vectorgoaltostart[i]<< std::endl;
-
-                // }
-                //         for(int i = 0; i< totalForceVecwithStart.size();i++){
-                //    std::cout << "totalForceVec from the points : " << totalForceVec[i]<< std::endl;
-
-                // }
-                // for(int i = 0; i< totalForceVecwithStart.size();i++){
-                // std::cout << "befor project totalForceVecwithStart : " << totalForceVecwithStart[i]<< std::endl;
-
-                //}
-
-                // if (!(totalForceVecwithStart.empty() || vectorgoaltostart.empty())){
-                //     if(iterateForwardSearch){
-                //          totalForceVecwithStart = normalize(totalForceVecwithStart + vectorstarttogoal);
-                //     }
-                //     else{
-                //          totalForceVecwithStart = normalize(totalForceVecwithStart + vectorgoaltostart);
-
-                //     }
-
-                // }
-
-                //         for(int i = 0; i< totalForceVecwithStart.size();i++){
-
-                //             std::cout << "totalForceVecwithStart: " << totalForceVecwithStart[i]<< std::endl;
-
-                //         }
-                // // for(int i = 0; i < dimension_; i++){
-
-                //     TotalForce::totalForceVecwithStart_[i] = totalForceVecwithStart[1-i];
-                // }
-
+                // Set the final total force vector with start value
                 totalForceVecwithStart_ = totalForceVecwithStart;
             }
 
             std::vector<double> TotalForce::getValueofforceDirection()
             {
+                // Return the total force vector with start value
                 return totalForceVecwithStart_;
             }
 
-            // 椭圆距离计算函数
+            // Function to calculate the elliptical distance between two states
             double TotalForce::calculateEllipticalDistance(const std::shared_ptr<State> &state1,
                                                            const std::shared_ptr<State> &state2,
                                                            std::vector<double> &Vector, std::size_t dimension_)
             {
+                // If the force vector is empty, initialize it as a unit circle
                 if (Vector.empty())
                 {
                     std::vector<double> circle(dimension_, 1.0);
                     Vector = circle;
                 }
-                if (!state1)
+
+                // Check for null states and throw an exception if found
+                if (!state1 || !state2)
                 {
-                    throw std::invalid_argument("Provided state1 is null");
+                    throw std::invalid_argument("Provided state is null");
                 }
 
-                if (!state2)
-                {
-                    throw std::invalid_argument("Provided state2 is null");
-                }
-
+                // Convert states to real vector state space types
                 auto cstate1 = state1->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
                 auto cstate2 = state2->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
 
-                if (!cstate1 || !cstate2)
-                {
-                    throw std::runtime_error("rstate pointer is null");
-                }
+                // Calculate the elliptical distance between the two states
                 double theta1 = 0., theta2 = 0., dx = 0., dy = 0., dist = 0.;
-
                 for (unsigned int i = 0; i < dimension_; ++i)
                 {
                     theta1 += cstate1->values[i];
                     theta2 += cstate2->values[i];
                     dx += cos(theta1) - cos(theta2);
                     dy += sin(theta1) - sin(theta2);
-                    // std::cout << "vector" << Vector[i] << std::endl;
                     dist += sqrt((dx * dx + dy * dy) / (Vector[i] * Vector[i]));
                 }
-                // std::cout << "dist:   " << dist << std::endl;
 
                 return dist;
             }
 
+            // ...
+
             double TotalForce::getNorm(const Vector &vector) const
             {
-                // Safety check in case of Segmentation Fault
+                // Check if the provided vector is empty and throw an exception if so
                 if (vector.empty())
                 {
-                    throw std::invalid_argument("Privided vector is null");
+                    throw std::invalid_argument("Provided vector is null");
                 }
 
+                // Calculate the norm (magnitude) of the vector
                 double sum = 0.0;
-
                 for (auto v : vector)
                 {
-                    sum += v * v;
+                    sum += v * v;  // Sum of squares
                 }
 
-                return std::sqrt(sum);
+                return std::sqrt(sum);  // Square root of the sum
             }
 
             double TotalForce::dotProduct(const Vector &v1, const Vector &v2) const
             {
-                // Safety check in case of Segmentation Fault
-                if (v1.empty())
+                // Check for null vectors and throw an exception if found
+                if (v1.empty() || v2.empty())
                 {
-                    throw std::invalid_argument("Provided vector1 is null");
+                    throw std::invalid_argument("One of the provided vectors is null");
                 }
 
-                // Safety check in case of Segmentation Fault
-                if (v2.empty())
-                {
-                    throw std::invalid_argument("Provided vector2 is null");
-                }
-
+                // Calculate the dot product of two vectors
                 double dot_product = 0.0;
-
                 for (size_t i = 0; i < dimension_; ++i)
                 {
-                    dot_product += v1[i] * v2[i];
+                    dot_product += v1[i] * v2[i];  // Sum of products
                 }
 
                 return dot_product;
@@ -462,10 +403,12 @@ namespace ompl
 
             std::vector<double> TotalForce::vectorProjection(const std::vector<double> &a, const std::vector<double> &b)
             {
-                double dotAB = dotProduct(a, b);
-                double dotBB = dotProduct(b, b);
-                double scale = dotAB / dotBB;
+                // Calculate the projection of vector a onto vector b
+                double dotAB = dotProduct(a, b);  // Dot product of a and b
+                double dotBB = dotProduct(b, b);  // Dot product of b with itself
+                double scale = dotAB / dotBB;     // Scaling factor
 
+                // Apply the scale to each element of vector b
                 std::vector<double> projection;
                 projection.reserve(b.size());
                 for (auto &element : b)
@@ -477,43 +420,38 @@ namespace ompl
 
             Vector TotalForce::normalize(const Vector &v) const
             {
+                // Calculate the norm of the vector
                 double norm = getNorm(v);
 
+                // Check for zero vector and throw an exception if found
                 if (std::fabs(norm) < epsilon_)
                 {
                     throw std::runtime_error("Cannot normalize a zero vector");
                 }
 
-                return v / norm;
+                // Normalize the vector by dividing each element by the norm
+                Vector normalizedVec = v;
+                for (auto &val : normalizedVec)
+                {
+                    val /= norm;
+                }
+                return normalizedVec;
             }
 
             bool TotalForce::isVectorBetween(const Vector &targetVector, const Vector &goalVector,
                                              const std::shared_ptr<State> &sourceState,
                                              const std::shared_ptr<State> &neighborState) const
             {
-                // Safety checks
-                if (targetVector.empty())
+                // Safety checks for null vectors and states
+                if (targetVector.empty() || !sourceState || !neighborState)
                 {
-                    throw std::invalid_argument("Provided target vector is null");
-                }
-                if (!sourceState)
-                {
-                    throw std::invalid_argument("Provided sourceState is null");
-                }
-                if (!neighborState)
-                {
-                    throw std::invalid_argument("Provided neighborState is null");
+                    throw std::invalid_argument("One of the provided vectors or states is null");
                 }
 
+                // Calculate the vector to check
                 Vector vectorTocheck = getVector(sourceState, neighborState);
 
-                if (std::fabs(getNorm(targetVector)) < epsilon_ || std::fabs(getNorm(goalVector)) < epsilon_ ||
-                    std::fabs(getNorm(vectorTocheck)) < epsilon_)
-                {
-                    return false;
-                }
-
-                // Normalize the vectors to focus on direction, not magnitude
+                // Normalize the vectors to focus on direction
                 Vector normalizedTarget = normalize(targetVector);
                 Vector normalizedGoal = normalize(goalVector);
                 Vector normalizedToCheck = normalize(vectorTocheck);
@@ -522,83 +460,67 @@ namespace ompl
                 double dotProductWithTarget = dotProduct(normalizedToCheck, normalizedTarget);
                 double dotProductWithGoal = dotProduct(normalizedToCheck, normalizedGoal);
 
-                // If the dot products with both vectors are positive,
-                // then the direction of vectorToCheck is between targetVector and goalVector.
+                // Return true if the vector is between targetVector and goalVector
                 return (dotProductWithTarget >= 0.0 && dotProductWithGoal >= 0.0);
             }
 
             bool TotalForce::checkAngle(const Vector &targetVector, const std::shared_ptr<State> &sourceState,
                                         const std::shared_ptr<State> &neighborState) const
             {
-                // Safety check in case of Segmentation Fault
-                if (targetVector.empty())
+                // Safety checks for null vectors and states
+                if (targetVector.empty() || !sourceState || !neighborState)
                 {
-                    throw std::invalid_argument("Provided target vector is null");
+                    throw std::invalid_argument("One of the provided vectors or states is null");
                 }
 
-                // Safety check in case of Segmentation Fault
-                if (!sourceState)
-                {
-                    throw std::invalid_argument("Provided sourceState is null");
-                }
-
-                // Safety check in case of Segmentation Fault
-                if (!neighborState)
-                {
-                    throw std::invalid_argument("Provided neighborState is null");
-                }
-
+                // Calculate the vector to check
                 Vector vectorTocheck = getVector(sourceState, neighborState);
 
+                // Calculate the dot product of target vector and vector to check
                 double dotValue = dotProduct(targetVector, vectorTocheck);
 
-                // Check to avoid division by zero
+                // Check for zero magnitude and throw an exception if found
                 if (std::fabs(getNorm(targetVector)) < epsilon_)
                 {
-                    throw std::invalid_argument("Vector1 has zero magnitude.");
+                    throw std::invalid_argument("Target vector has zero magnitude.");
                 }
 
-                if (std::fabs(getNorm(vectorTocheck)) < epsilon_)
-                {
-                    return true;
-                }
-
+                // Calculate the cosine of the angle between vectors
                 double cosAngle = dotValue / (getNorm(targetVector) * getNorm(vectorTocheck));
-                double safetyBuffer = std::cos(M_PI / 3.0);  // cos(60°)
+                double safetyBuffer = std::cos(M_PI / 3.0);  // 60 degrees threshold
 
+                // Return true if the cosine of the angle is less than the safety buffer
                 return cosAngle <= safetyBuffer;
             }
 
             double TotalForce::getRatioofValidInvalidPoints(std::vector<std::shared_ptr<State>> states)
             {
-                std::size_t l1 = 0;
-                std::size_t l2 = 0;
+                // Count the number of valid and invalid points
+                std::size_t l1 = 0;  // Number of valid points
+                std::size_t l2 = 0;  // Number of invalid points
                 for (auto state : states)
-                {  // l1 number of Valid points
+                {
                     if (state->isAttractive_)
                     {
-                        l1++;
+                        l1++;  // Count valid points
                     }
                     else
-                        l2++;
+                    {
+                        l2++;  // Count invalid points
+                    }
                 }
 
+                // Check for zero valid points and return INFINITY if found
                 if (l1 == 0)
                 {
                     return INFINITY;
                 }
-
                 else
-                {  // ratio samller is better
-                    // std::cout << "VAlid points: " << l1 << std::endl;
-                    // std::cout << "INVAlid points: " << l2 << std::endl;
+                {
                     double ratio = static_cast<double>(l2) / l1;
-                    return ratio;
+                    return ratio;  // Return the ratio of invalid to valid points
                 }
             }
-
         }  // namespace fitstar
-
-    }  // namespace geometric
-
+    }      // namespace geometric
 }  // namespace ompl
