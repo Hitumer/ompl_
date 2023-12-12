@@ -34,13 +34,13 @@
 
 // Authors: Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/fitstar/AdaptiveBatchSize.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/AdaptiveBatchSize.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             AdaptiveBatchSize::AdaptiveBatchSize(const DecayMethod &decay_method, ompl::base::Cost &solutionCost,
                                                  const double &minPossibleCost, unsigned int &batchSize,
@@ -227,7 +227,7 @@ namespace ompl
                 return _batchSize_;
             }
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 

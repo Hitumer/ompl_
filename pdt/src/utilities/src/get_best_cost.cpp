@@ -52,7 +52,7 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRTsharp.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
-#include <ompl/geometric/planners/informedtrees/FITstar.h>
+#include <ompl/geometric/planners/informedtrees/FDITstar.h>
 
 #ifdef PDT_EXTRA_EITSTAR_PR
 #include <ompl/geometric/planners/informedtrees/EIRMstar.h>
@@ -77,8 +77,8 @@ ompl::base::Cost getBestCost(const ompl::base::PlannerPtr& planner,
     case common::PLANNER_TYPE::BITSTAR: {
       return planner->as<ompl::geometric::BITstar>()->bestCost();
     }
-    case common::PLANNER_TYPE::FITSTAR: {
-      return planner->as<ompl::geometric::FITstar>()->bestCost();
+    case common::PLANNER_TYPE::FDITSTAR: {
+      return planner->as<ompl::geometric::FDITstar>()->bestCost();
     }
 #ifdef PDT_EXTRA_EITSTAR_PR
     case common::PLANNER_TYPE::EIRMSTAR: {

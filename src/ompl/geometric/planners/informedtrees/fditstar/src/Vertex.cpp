@@ -34,18 +34,18 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 
 #include <algorithm>
 #include <limits>
 
-#include "ompl/geometric/planners/informedtrees/fitstar/State.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/State.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             namespace
             {
@@ -215,7 +215,7 @@ namespace ompl
                 expandTag_ = expandTag;
             }
 
-            void Vertex::callOnBranch(const std::function<void(const std::shared_ptr<fitstar::State> &)> &function)
+            void Vertex::callOnBranch(const std::function<void(const std::shared_ptr<fditstar::State> &)> &function)
             {
                 // Call it on the underlying state.
                 function(state_);
@@ -227,7 +227,7 @@ namespace ompl
                 }
             }
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 

@@ -20,7 +20,7 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FDITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_
 
 #include <memory>
 
@@ -44,26 +44,26 @@
 #include "ompl/base/SpaceInformation.h"
 
 #include "ompl/geometric/PathGeometric.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/TotalForce.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/RandomGeometricGraph.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/ForwardQueue.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/ReverseQueue.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/RandomGeometricGraph.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/ForwardQueue.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/ReverseQueue.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        /** \brief flexible Informed Trees (FIT*) */
-        class FITstar : public ompl::base::Planner
+        /** \brief flexible Informed Trees (FDIT*) */
+        class FDITstar : public ompl::base::Planner
         {
         public:
-            /** \brief Constructs an instance of FIT* using the provided space information. */
-            explicit FITstar(const std::shared_ptr<ompl::base::SpaceInformation> &spaceInfo);
+            /** \brief Constructs an instance of FDIT* using the provided space information. */
+            explicit FDITstar(const std::shared_ptr<ompl::base::SpaceInformation> &spaceInfo);
 
-            /** \brief Destructs this instance of FIT*. */
-            ~FITstar();
+            /** \brief Destructs this instance of FDIT*. */
+            ~FDITstar();
 
             /** \brief Setup the parts of the planner that rely on the problem definition being set. */
             void setup() override;
@@ -76,7 +76,7 @@ namespace ompl
              * start from scratch. */
             void clear() override;
 
-            /** \brief Clears all query-specific information, such as start and goal states and search trees. FIT*
+            /** \brief Clears all query-specific information, such as start and goal states and search trees. FDIT*
              * retains the samples and collision checking cache of previous queries. */
             void clearQuery() override;
 
@@ -119,31 +119,31 @@ namespace ompl
             /** \brief Returns whether approximate solutions are tracked or not. */
             bool areApproximateSolutionsTracked() const;
 
-            /** \brief Set whether to use a k-nearest RGG connection model. If false, FIT* uses an r-disc model. */
+            /** \brief Set whether to use a k-nearest RGG connection model. If false, FDIT* uses an r-disc model. */
             void setUseKNearest(bool useKNearest);
 
-            /** \brief Returns whether to use a k-nearest RGG connection model. If false, FIT* uses an r-disc model. */
+            /** \brief Returns whether to use a k-nearest RGG connection model. If false, FDIT* uses an r-disc model. */
             bool getUseKNearest() const;
 
-            /** \brief Set whether to use a adaptive batch size RGG connection model. If false, FIT* uses static model.
+            /** \brief Set whether to use a adaptive batch size RGG connection model. If false, FDIT* uses static model.
              */
             void setUseAdaptiveBatchSize(bool useAdaptiveBatchSize);
 
-            /** \brief Returns whether to use a adaptive batch size RGG connection model. If false, FIT* uses static
+            /** \brief Returns whether to use a adaptive batch size RGG connection model. If false, FDIT* uses static
              * model. */
             bool getUseAdaptiveBatchSize() const;
 
-            /** \brief Set the maximum number of goals FIT* will sample from sampleable goal regions. */
+            /** \brief Set the maximum number of goals FDIT* will sample from sampleable goal regions. */
             void setMaxNumberOfGoals(unsigned int numberOfGoals);
 
-            /** \brief Returns the maximum number of goals FIT* will sample from sampleable goal regions. */
+            /** \brief Returns the maximum number of goals FDIT* will sample from sampleable goal regions. */
             unsigned int getMaxNumberOfGoals() const;
 
             /** \brief Returns true if the forward queue is empty */
             bool isForwardQueueEmpty() const;
 
             /** \brief Returns a copy of the forward queue. */
-            std::vector<fitstar::Edge> getForwardQueue() const;
+            std::vector<fditstar::Edge> getForwardQueue() const;
 
             /** \brief Returns the effort of the edge at the top of the forward queue. */
             unsigned int getForwardEffort() const;
@@ -152,22 +152,22 @@ namespace ompl
             bool isReverseQueueEmpty() const;
 
             /** \brief Returns a copy of the reverse queue. */
-            std::vector<fitstar::Edge> getReverseQueue() const;
+            std::vector<fditstar::Edge> getReverseQueue() const;
 
             /** \brief Returns copies of the edges in the reverse tree. */
-            std::vector<fitstar::Edge> getReverseTree() const;
+            std::vector<fditstar::Edge> getReverseTree() const;
 
             /** \brief Returns the next edge in the forward queue. */
-            fitstar::Edge getNextForwardEdge() const;
+            fditstar::Edge getNextForwardEdge() const;
 
             /** \brief Returns the next edge in the reverse queue. */
-            fitstar::Edge getNextReverseEdge() const;
+            fditstar::Edge getNextReverseEdge() const;
 
             /** \brief Checks whether the state is a start state. */
-            bool isStart(const std::shared_ptr<fitstar::State> &state) const;
+            bool isStart(const std::shared_ptr<fditstar::State> &state) const;
 
             /** \brief Checks whether the state is a goal state. */
-            bool isGoal(const std::shared_ptr<fitstar::State> &state) const;
+            bool isGoal(const std::shared_ptr<fditstar::State> &state) const;
 
             /** \brief Returns the planner data. */
             void getPlannerData(base::PlannerData &data) const override;
@@ -178,7 +178,7 @@ namespace ompl
 
         protected:
             // ---
-            // The settings that turn FIT* into EIRM*.
+            // The settings that turn FDIT* into EIRM*.
             // ---
 
             /** \brief Set wheter multiquery is enabled or not. */
@@ -194,7 +194,7 @@ namespace ompl
             unsigned int getStartGoalPruningThreshold() const;
 
         private:
-            /** \brief Performs one iteration of FIT*. This either searches for a solution by advancing the forward
+            /** \brief Performs one iteration of FDIT*. This either searches for a solution by advancing the forward
              * search, calculates more accurate heuristics by advancing the reverse search, or improves the current RGG
              * approximation by sampling more states. */
             void iterate(const ompl::base::PlannerTerminationCondition &terminationCondition);
@@ -209,7 +209,7 @@ namespace ompl
              * improve the current solution. */
             void improveApproximation(const ompl::base::PlannerTerminationCondition &terminationCondition);
 
-            /** \brief Returns whether the to continue solving the problem or return the best solution. FIT* stops under
+            /** \brief Returns whether the to continue solving the problem or return the best solution. FDIT* stops under
              *  three conditions:
              *    1. The termination condition is true; or
              *    2. The current solution satisfies the objective; or
@@ -249,24 +249,24 @@ namespace ompl
             ensureStartAndGoalStates(const ompl::base::PlannerTerminationCondition &terminationCondition);
 
             /** \brief Optimize the final path. */
-            void finalPathOptimize(std::vector<std::shared_ptr<fitstar::State>> &states);
+            void finalPathOptimize(std::vector<std::shared_ptr<fditstar::State>> &states);
 
             /** \brief Constructs the forward path to a state. */
             std::shared_ptr<ompl::geometric::PathGeometric>
-            getPathToState(const std::shared_ptr<fitstar::State> &state);
+            getPathToState(const std::shared_ptr<fditstar::State> &state);
 
             /** \brief Updates the solution with a given goal state. */
-            void updateExactSolution(const std::shared_ptr<fitstar::State> &goalState);
+            void updateExactSolution(const std::shared_ptr<fditstar::State> &goalState);
 
             /** \brief Checks whether the input vertex is the new best approximate solution and updates the solution in
              * the problem definition if so. **/
-            void updateApproximateSolution(const std::shared_ptr<fitstar::State> &state);
+            void updateApproximateSolution(const std::shared_ptr<fditstar::State> &state);
 
             /** \brief Updates the current cost to come of a state using the information in the forward search tree. */
-            void updateCurrentCostToCome(const std::shared_ptr<fitstar::State> &state);
+            void updateCurrentCostToCome(const std::shared_ptr<fditstar::State> &state);
 
             /** \brief Returns the cost to go to the goal. */
-            ompl::base::Cost computeCostToGoToGoal(const std::shared_ptr<fitstar::State> &state) const;
+            ompl::base::Cost computeCostToGoToGoal(const std::shared_ptr<fditstar::State> &state) const;
 
             /** \brief Lets users know about a newly found solution via OMPL_INFORM. */
             void informAboutNewSolution() const;
@@ -281,53 +281,53 @@ namespace ompl
             unsigned int countNumVerticesInReverseTree() const;
 
             /** \brief Returns all edges of the state in the RGG, as well as its parents and children. */
-            std::vector<fitstar::Edge> expand(const std::shared_ptr<fitstar::State> &state, bool iterateForwardSearch) const;
+            std::vector<fditstar::Edge> expand(const std::shared_ptr<fditstar::State> &state, bool iterateForwardSearch) const;
 
             /** \brief Expands the state unless it is a goal. */
-            std::vector<fitstar::Edge> expandUnlessGoal(const std::shared_ptr<fitstar::State> &state) const;
+            std::vector<fditstar::Edge> expandUnlessGoal(const std::shared_ptr<fditstar::State> &state) const;
 
             /** \brief Returns whether the vertex has been closed during the current search. */
-            bool isClosed(const std::shared_ptr<fitstar::Vertex> &vertex) const;
+            bool isClosed(const std::shared_ptr<fditstar::Vertex> &vertex) const;
 
             /** \brief Returns whether the edge is in the forward tree. */
-            bool isInForwardTree(const fitstar::Edge &edge) const;
+            bool isInForwardTree(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge is in the reverse tree. */
-            bool isInReverseTree(const fitstar::Edge &edge) const;
+            bool isInReverseTree(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge can improve the reverse path. */
-            bool doesImproveReversePath(const fitstar::Edge &edge) const;
+            bool doesImproveReversePath(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge can improve the reverse tree. */
-            bool doesImproveReverseTree(const fitstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
+            bool doesImproveReverseTree(const fditstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
 
             /** \brief Returns whether the edge could improve the forward path according to an admissible heuristic. */
-            bool couldImproveForwardPath(const fitstar::Edge &edge) const;
+            bool couldImproveForwardPath(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge could improve the forward tree according to an admissible heuristic. */
-            bool couldImproveForwardTree(const fitstar::Edge &edge) const;
+            bool couldImproveForwardTree(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge does improve the forward path. */
-            bool doesImproveForwardPath(const fitstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
+            bool doesImproveForwardPath(const fditstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
 
             /** \brief Returns whether the edge does improve the forward tree. */
-            bool doesImproveForwardTree(const fitstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
+            bool doesImproveForwardTree(const fditstar::Edge &edge, const ompl::base::Cost &edgeCost) const;
 
             /** \brief Returns the estimated cost to the target through the given edge. */
-            ompl::base::Cost estimateCostToTarget(const fitstar::Edge &edge) const;
+            ompl::base::Cost estimateCostToTarget(const fditstar::Edge &edge) const;
 
             /** \brief Returns the estimated effort to the target through the given edge. */
-            unsigned int estimateEffortToTarget(const fitstar::Edge &edge) const;
+            unsigned int estimateEffortToTarget(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge is valid. */
-            bool isValid(const fitstar::Edge &edge) const;
+            bool isValid(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge could be valid. Performs sparse collision detection on the edge. */
-            bool couldBeValid(const fitstar::Edge &edge) const;
+            bool couldBeValid(const fditstar::Edge &edge) const;
 
             /** \brief Returns whether the edge is valid at the given resolution, this function does the actual work of
              * checking states along the edge. */
-            bool isValidAtResolution(const fitstar::Edge &edge, std::size_t numChecks) const;
+            bool isValidAtResolution(const fditstar::Edge &edge, std::size_t numChecks) const;
 
             /** \brief Returns whether the cost is better than the other. */
             bool isBetter(const ompl::base::Cost &lhs, const ompl::base::Cost &rhs) const;
@@ -349,12 +349,12 @@ namespace ompl
             void expandGoalVerticesIntoReverseQueue();
 
             /** \brief The sampling-based approximation of the state space. */
-            mutable fitstar::RandomGeometricGraph graph_;
+            mutable fditstar::RandomGeometricGraph graph_;
 
             /** \brief The number of states added when the approximation is updated. */
             unsigned int batchSize_{299u};
 
-            /** \brief Whether to use a adaptive batch size RGG. If false, FIT* uses an static batchsize. */
+            /** \brief Whether to use a adaptive batch size RGG. If false, FDIT* uses an static batchsize. */
             bool useAdaptiveBatchSize_{true};
 
             /** \brief Max area of the sampled ellipse */
@@ -405,16 +405,16 @@ namespace ompl
             ompl::base::State *detectionState_;
 
             /** \brief The roots of the forward search tree (forest). */
-            std::vector<std::shared_ptr<fitstar::Vertex>> startVertices_;
+            std::vector<std::shared_ptr<fditstar::Vertex>> startVertices_;
 
             /** \brief The roots of the reverse search tree (forest). */
-            std::vector<std::shared_ptr<fitstar::Vertex>> goalVertices_;
+            std::vector<std::shared_ptr<fditstar::Vertex>> goalVertices_;
 
             /** \brief The forward search queue. */
-            std::unique_ptr<fitstar::ForwardQueue> forwardQueue_;
+            std::unique_ptr<fditstar::ForwardQueue> forwardQueue_;
 
             /** \brief The reverse search queue. */
-            std::unique_ptr<fitstar::ReverseQueue> reverseQueue_;
+            std::unique_ptr<fditstar::ReverseQueue> reverseQueue_;
 
             /** \brief The current iteration. */
             std::size_t iteration_{0u};
@@ -466,4 +466,4 @@ namespace ompl
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_

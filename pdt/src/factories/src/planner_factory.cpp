@@ -41,7 +41,7 @@
 #include <ompl/geometric/planners/informedtrees/ABITstar.h>
 #include <ompl/geometric/planners/informedtrees/AITstar.h>
 #include <ompl/geometric/planners/informedtrees/BITstar.h>
-#include <ompl/geometric/planners/informedtrees/FITstar.h>
+#include <ompl/geometric/planners/informedtrees/FDITstar.h>
 #include <ompl/geometric/planners/prm/LazyPRMstar.h>
 #include <ompl/geometric/planners/prm/PRMstar.h>
 #include <ompl/geometric/planners/prm/SPARStwo.h>
@@ -143,10 +143,10 @@ PlannerFactory::create(const std::string &plannerName) const {
       return {planner, common::PLANNER_TYPE::BITSTAR, createTimer.duration()};
     }
 
-    case common::PLANNER_TYPE::FITSTAR: {
-      // Allocate and configure an FIT* planner.
+    case common::PLANNER_TYPE::FDITSTAR: {
+      // Allocate and configure an FDIT* planner.
       createTimer.start();
-      auto planner = std::make_shared<ompl::geometric::FITstar>(context_->getSpaceInformation());
+      auto planner = std::make_shared<ompl::geometric::FDITstar>(context_->getSpaceInformation());
       planner->setProblemDefinition(context_->instantiateNewProblemDefinition());
       createTimer.stop();
       planner->setName(plannerName);
@@ -158,7 +158,7 @@ PlannerFactory::create(const std::string &plannerName) const {
       planner->setUseAdaptiveBatchSize(config_->get<bool>(optionsKey + "/useAdaptiveBatchSize"));
       planner->trackApproximateSolutions(
           config_->get<bool>(optionsKey + "/trackApproximateSolutions"));
-      return {planner, common::PLANNER_TYPE::FITSTAR, createTimer.duration()};
+      return {planner, common::PLANNER_TYPE::FDITSTAR, createTimer.duration()};
     }
 #ifdef PDT_EXTRA_EITSTAR_PR
     case common::PLANNER_TYPE::EIRMSTAR: {

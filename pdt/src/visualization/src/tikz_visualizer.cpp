@@ -523,9 +523,9 @@ void TikzVisualizer::drawPlannerSpecificVisualizations(
           std::dynamic_pointer_cast<const AITstarData>(plannerSpecificData));
       break;
     }
-    case common::PLANNER_TYPE::FITSTAR: {
-      drawFITstarSpecificVisualizations(
-          std::dynamic_pointer_cast<const FITstarData>(plannerSpecificData));
+    case common::PLANNER_TYPE::FDITSTAR: {
+      drawFDITstarSpecificVisualizations(
+          std::dynamic_pointer_cast<const FDITstarData>(plannerSpecificData));
       break;
     }
 #ifdef PDT_EXTRA_EITSTAR_PR
@@ -615,17 +615,17 @@ void TikzVisualizer::drawAITstarSpecificVisualizations(
   // }
 }
 
-void TikzVisualizer::drawFITstarSpecificVisualizations(
-    const std::shared_ptr<const FITstarData>& fitstarData) const {
+void TikzVisualizer::drawFDITstarSpecificVisualizations(
+    const std::shared_ptr<const FDITstarData>& fditstarData) const {
   // // Draw the backward search tree.
-  // for (const auto& edge : fitstarData->getReverseTree()) {
+  // for (const auto& edge : fditstarData->getReverseTree()) {
   //   const auto source = edge.source->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
   //   const auto target = edge.target->raw()->as<ompl::base::RealVectorStateSpace::StateType>();
   //   drawEdge(source, target, "edge, pdtlightblue");
   // }
 
   // Draw the top edge in the queue.
-  auto nextEdge = fitstarData->getNextForwardEdge();
+  auto nextEdge = fditstarData->getNextForwardEdge();
   if (nextEdge.source && nextEdge.target) {
     drawEdge(nextEdge.source->raw()->as<ompl::base::RealVectorStateSpace::StateType>(),
              nextEdge.target->raw()->as<ompl::base::RealVectorStateSpace::StateType>(),
@@ -633,7 +633,7 @@ void TikzVisualizer::drawFITstarSpecificVisualizations(
   }
 
   // // Draw the top edge in the queue.
-  // auto nextEdge = fitstarData->getNextForwardEdge();
+  // auto nextEdge = fditstarData->getNextForwardEdge();
   // if (nextEdge.source && nextEdge.target) {
   //   drawEdge(nextEdge.source->raw()->as<ompl::base::RealVectorStateSpace::StateType>(),
   //            nextEdge.target->raw()->as<ompl::base::RealVectorStateSpace::StateType>(),

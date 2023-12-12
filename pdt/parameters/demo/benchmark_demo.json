@@ -2,13 +2,13 @@
     "experiment": {
         "executable": "benchmark",
         "planners": [
-            "defaultFITstar",
+            "defaultFDITstar",
             "defaultEITstar",
             "defaultABITstar",
             "defaultBITstar",
             "defaultInformedRRTstar"
         ],
-        "context": "defaultRandomRectangles4D",
+        "context": "defaultRandomRectangles16D",
         "numRuns": 100,
         "logFrequency": 10000,
         "loadDefaultContextConfig": true,

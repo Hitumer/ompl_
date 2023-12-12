@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_EDGE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_EDGE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_EDGE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_EDGE_
 
 #include <array>
 #include <limits>
@@ -47,7 +47,7 @@ namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             // Forward declaration of state to break include cycle.
             class State;
@@ -72,10 +72,10 @@ namespace ompl
                 std::shared_ptr<State> target;
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_EDGE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_EDGE_

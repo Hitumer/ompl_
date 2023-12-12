@@ -42,9 +42,9 @@
 #include <ompl/geometric/planners/informedtrees/BITstar.h>
 #include <ompl/geometric/planners/informedtrees/aitstar/Edge.h>
 
-#include <ompl/geometric/planners/informedtrees/FITstar.h>
-#include <ompl/geometric/planners/informedtrees/fitstar/Edge.h>
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+#include <ompl/geometric/planners/informedtrees/FDITstar.h>
+#include <ompl/geometric/planners/informedtrees/fditstar/Edge.h>
+#include "ompl/geometric/planners/informedtrees/fditstar/TotalForce.h"
 
 #ifdef PDT_EXTRA_EITSTAR_PR
 #include <ompl/geometric/planners/informedtrees/EITstar.h>
@@ -154,35 +154,35 @@ class AITstarData : public PlannerSpecificData {
   std::shared_ptr<ompl::geometric::aitstar::Vertex> nextVertex_{};
 };
 
-class FITstarData : public PlannerSpecificData {
+class FDITstarData : public PlannerSpecificData {
  public:
-  FITstarData(const ompl::base::SpaceInformationPtr& spaceInfo) : PlannerSpecificData(spaceInfo) {}
+  FDITstarData(const ompl::base::SpaceInformationPtr& spaceInfo) : PlannerSpecificData(spaceInfo) {}
   // Getters
-  std::vector<ompl::geometric::fitstar::Edge> getReverseTree() const;
-  std::vector<ompl::geometric::fitstar::Edge> getForwardQueue() const;
-  std::vector<ompl::geometric::fitstar::Edge> getReverseQueue() const;
-  std::vector<ompl::geometric::fitstar::TotalForce> getForceDirection() const;
+  std::vector<ompl::geometric::fditstar::Edge> getReverseTree() const;
+  std::vector<ompl::geometric::fditstar::Edge> getForwardQueue() const;
+  std::vector<ompl::geometric::fditstar::Edge> getReverseQueue() const;
+  std::vector<ompl::geometric::fditstar::TotalForce> getForceDirection() const;
 
-  ompl::geometric::fitstar::Edge getNextForwardEdge() const;
-  ompl::geometric::fitstar::Edge getNextReverseEdge() const;
+  ompl::geometric::fditstar::Edge getNextForwardEdge() const;
+  ompl::geometric::fditstar::Edge getNextReverseEdge() const;
 
   // Setters
-  void setReverseTree(const std::vector<ompl::geometric::fitstar::Edge>& tree);
-  void setForwardQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue);
-  void setReverseQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue);
-  void setForceDirection(const std::vector<ompl::geometric::fitstar::TotalForce>& queue);
+  void setReverseTree(const std::vector<ompl::geometric::fditstar::Edge>& tree);
+  void setForwardQueue(const std::vector<ompl::geometric::fditstar::Edge>& queue);
+  void setReverseQueue(const std::vector<ompl::geometric::fditstar::Edge>& queue);
+  void setForceDirection(const std::vector<ompl::geometric::fditstar::TotalForce>& queue);
 
-  void setNextForwardEdge(const ompl::geometric::fitstar::Edge& edge);
-  void setNextReverseEdge(const ompl::geometric::fitstar::Edge& edge);
+  void setNextForwardEdge(const ompl::geometric::fditstar::Edge& edge);
+  void setNextReverseEdge(const ompl::geometric::fditstar::Edge& edge);
 
  private:
-  std::vector<ompl::geometric::fitstar::Edge> reverseTree_{};
-  std::vector<ompl::geometric::fitstar::Edge> forwardQueue_{};
-  std::vector<ompl::geometric::fitstar::Edge> reverseQueue_{};
-  std::vector<ompl::geometric::fitstar::TotalForce> totalForceVec_{};
+  std::vector<ompl::geometric::fditstar::Edge> reverseTree_{};
+  std::vector<ompl::geometric::fditstar::Edge> forwardQueue_{};
+  std::vector<ompl::geometric::fditstar::Edge> reverseQueue_{};
+  std::vector<ompl::geometric::fditstar::TotalForce> totalForceVec_{};
 
-  ompl::geometric::fitstar::Edge nextForwardEdge_{};
-  ompl::geometric::fitstar::Edge nextReverseEdge_{};
+  ompl::geometric::fditstar::Edge nextForwardEdge_{};
+  ompl::geometric::fditstar::Edge nextReverseEdge_{};
 };
 #ifdef PDT_EXTRA_EITSTAR_PR
 class EITstarData : public PlannerSpecificData {

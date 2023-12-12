@@ -34,19 +34,19 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/fitstar/ForwardQueue.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/ForwardQueue.h"
 
 #include <algorithm>
 #include <cmath>
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/State.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/State.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             ForwardQueue::ForwardQueue(const std::shared_ptr<const ompl::base::OptimizationObjective> &objective,
                                        const std::shared_ptr<const ompl::base::StateSpace> &space)
@@ -423,7 +423,7 @@ namespace ompl
                     edge.target->getAdmissibleCostToGo());
             }
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 

@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_FORWARD_QUEUE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_FORWARD_QUEUE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_FORWARD_QUEUE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_FORWARD_QUEUE_
 
 #include <array>
 #include <map>
@@ -47,9 +47,9 @@
 #include "ompl/datastructures/BinaryHeap.h"
 #include "ompl/datastructures/NearestNeighbors.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Edge.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 
 #include <unordered_map>
 
@@ -57,7 +57,7 @@ namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             struct pair_hash
             {
@@ -206,10 +206,10 @@ namespace ompl
                 /** \brief The cached minimum effort. */
                 mutable unsigned int cachedMinEdgeEffort_{0u};
             };
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_FORWARD_QUEUE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_FORWARD_QUEUE_

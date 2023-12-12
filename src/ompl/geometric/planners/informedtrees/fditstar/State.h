@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_STATE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_STATE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_STATE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_STATE_
 
 #include <memory>
 #include <set>
@@ -45,13 +45,13 @@
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/base/State.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             /** \brief A wrapper class for OMPL's state. */
             class State : public std::enable_shared_from_this<State>  // Inheritance must be public here.
@@ -249,10 +249,10 @@ namespace ompl
                 std::shared_ptr<ompl::base::OptimizationObjective> objective_;
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_STATE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_STATE_

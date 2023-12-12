@@ -34,17 +34,17 @@
 
 // Authors: Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_ADAPTIVEBATCHSIZE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_ADAPTIVEBATCHSIZE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_ADAPTIVEBATCHSIZE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_ADAPTIVEBATCHSIZE_
 
-#include "ompl/geometric/planners/informedtrees/fitstar/RandomGeometricGraph.h"
-#include "ompl/geometric/planners/informedtrees/FITstar.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/RandomGeometricGraph.h"
+#include "ompl/geometric/planners/informedtrees/FDITstar.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             enum DecayMethod
             {
@@ -113,10 +113,10 @@ namespace ompl
                 std::size_t dim_;
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_ADAPTIVEBATCHSIZE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_ADAPTIVEBATCHSIZE_

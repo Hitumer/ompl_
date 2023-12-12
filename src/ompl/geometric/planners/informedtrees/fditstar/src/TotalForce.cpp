@@ -5,15 +5,15 @@
 #include <algorithm>
 #include <limits>
 
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/State.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/TotalForce.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/State.h"
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             // Constructor for TotalForce class
             TotalForce::TotalForce(const std::shared_ptr<State> &state, std::vector<std::shared_ptr<State>> &states,
@@ -521,6 +521,6 @@ namespace ompl
                     return ratio;  // Return the ratio of invalid to valid points
                 }
             }
-        }  // namespace fitstar
+        }  // namespace fditstar
     }      // namespace geometric
 }  // namespace ompl

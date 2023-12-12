@@ -317,8 +317,8 @@ void BaseVisualizer::createData() {
             batchSizes_.push_back(planner_->as<ompl::geometric::BITstar>()->getSamplesPerBatch());
             break;
           }
-          case common::PLANNER_TYPE::FITSTAR: {
-            batchSizes_.push_back(planner_->as<ompl::geometric::FITstar>()->getBatchSize());
+          case common::PLANNER_TYPE::FDITSTAR: {
+            batchSizes_.push_back(planner_->as<ompl::geometric::FDITstar>()->getBatchSize());
             break;
           }
           // case common::PLANNER_TYPE::GITSTAR: {
@@ -387,35 +387,35 @@ void BaseVisualizer::createData() {
           plannerSpecificData_.push_back(aitstarData);
           break;
         }
-        case common::PLANNER_TYPE::FITSTAR: {
-          auto fitstarData = std::make_shared<FITstarData>(context_->getSpaceInformation());
+        case common::PLANNER_TYPE::FDITSTAR: {
+          auto fditstarData = std::make_shared<FDITstarData>(context_->getSpaceInformation());
 
           // Store the EIT* reverse tree.
-          fitstarData->setReverseTree(planner_->as<ompl::geometric::FITstar>()->getReverseTree());
+          fditstarData->setReverseTree(planner_->as<ompl::geometric::FDITstar>()->getReverseTree());
 
           // Store the EIT* forward queue.
-          fitstarData->setForwardQueue(planner_->as<ompl::geometric::FITstar>()->getForwardQueue());
+          fditstarData->setForwardQueue(planner_->as<ompl::geometric::FDITstar>()->getForwardQueue());
 
           // Store the EIT* reverse queue.
-          fitstarData->setReverseQueue(planner_->as<ompl::geometric::FITstar>()->getReverseQueue());
+          fditstarData->setReverseQueue(planner_->as<ompl::geometric::FDITstar>()->getReverseQueue());
 
           // Store the next forward edge.
-          if (!planner_->as<ompl::geometric::FITstar>()->isForwardQueueEmpty()) {
-            fitstarData->setNextForwardEdge(
-                planner_->as<ompl::geometric::FITstar>()->getNextForwardEdge());
+          if (!planner_->as<ompl::geometric::FDITstar>()->isForwardQueueEmpty()) {
+            fditstarData->setNextForwardEdge(
+                planner_->as<ompl::geometric::FDITstar>()->getNextForwardEdge());
           }
           // No else, the edge is default constructed.
 
           // Store the next reverse edge.
-          if (!planner_->as<ompl::geometric::FITstar>()->isReverseQueueEmpty()) {
-            fitstarData->setNextReverseEdge(
-                planner_->as<ompl::geometric::FITstar>()->getNextReverseEdge());
+          if (!planner_->as<ompl::geometric::FDITstar>()->isReverseQueueEmpty()) {
+            fditstarData->setNextReverseEdge(
+                planner_->as<ompl::geometric::FDITstar>()->getNextReverseEdge());
           }
           // No else, the edge is default constructed.
 
           // Store the data.
           std::scoped_lock lock(plannerSpecificDataMutex_);
-          plannerSpecificData_.push_back(fitstarData);
+          plannerSpecificData_.push_back(fditstarData);
           break;
         }
         // case common::PLANNER_TYPE::GITSTAR: {

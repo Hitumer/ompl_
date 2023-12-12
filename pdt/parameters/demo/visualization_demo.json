@@ -1,7 +1,7 @@
 {
     "experiment": {
         "executable": "visualization",
-        "planner": "defaultFITstar",
+        "planner": "defaultFDITstar",
         "context": "defaultRandomRectangles2D",
         "useOnlyThisConfig": false,
         "seed": 18439222748686676701

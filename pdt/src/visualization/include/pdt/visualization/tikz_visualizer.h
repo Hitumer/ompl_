@@ -131,8 +131,8 @@ class TikzVisualizer : public planning_contexts::ContextVisitor, public obstacle
       const std::shared_ptr<const BITstarData>& bitstarData) const;
   void drawAITstarSpecificVisualizations(
       const std::shared_ptr<const AITstarData>& aitstarData) const;
-  void drawFITstarSpecificVisualizations(
-      const std::shared_ptr<const FITstarData>& fitstarData) const;
+  void drawFDITstarSpecificVisualizations(
+      const std::shared_ptr<const FDITstarData>& fditstarData) const;
 #ifdef PDT_EXTRA_EITSTAR_PR
   void drawEITstarSpecificVisualizations(
       const std::shared_ptr<const EITstarData>& aitstarData) const;

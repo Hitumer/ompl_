@@ -104,7 +104,7 @@ class InteractiveVisualizer : public BaseVisualizer,
   void drawPlannerSpecificVisualizations(const std::size_t iteration) const;
   void drawBITstarSpecificVisualizations(const std::size_t iteration) const;
   void drawAITstarSpecificVisualizations(const std::size_t iteration) const;
-  void drawFITstarSpecificVisualizations(const std::size_t iteration) const;
+  void drawFDITstarSpecificVisualizations(const std::size_t iteration) const;
 #ifdef PDT_EXTRA_EITSTAR_PR
   void drawEITstarSpecificVisualizations(const std::size_t iteration) const;
 #endif  // #ifdef PDT_EXTRA_EITSTAR_PR

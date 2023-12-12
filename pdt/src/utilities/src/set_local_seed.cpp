@@ -21,12 +21,12 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FDITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  LOSS OF USE, DATA, OR PROFDITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
@@ -41,7 +41,7 @@
 #include <ompl/geometric/planners/informedtrees/AITstar.h>
 #include <ompl/geometric/planners/informedtrees/BITstar.h>
 
-#include <ompl/geometric/planners/informedtrees/FITstar.h>
+#include <ompl/geometric/planners/informedtrees/FDITstar.h>
 #ifdef PDT_EXTRA_EITSTAR_PR
 #include <ompl/geometric/planners/informedtrees/EIRMstar.h>
 #include <ompl/geometric/planners/informedtrees/EITstar.h>
@@ -95,9 +95,9 @@ void setLocalSeed(const std::shared_ptr<const config::Configuration> config,
 #endif  // #ifdef PDT_EXTRA_SET_LOCAL_SEEDS
         break;
       }
-      case common::PLANNER_TYPE::FITSTAR: {
+      case common::PLANNER_TYPE::FDITSTAR: {
 #ifdef PDT_EXTRA_SET_LOCAL_SEEDS
-        planner->as<ompl::geometric::FITstar>()->setLocalSeed(
+        planner->as<ompl::geometric::FDITstar>()->setLocalSeed(
             config->get<std::size_t>("experiment/seed"));
 #else
         warnSetLocalSeed();

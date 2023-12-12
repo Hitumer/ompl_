@@ -34,25 +34,20 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_DIRECTION_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_DIRECTION_
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
-            enum class Direction
+            Edge::Edge(const std::shared_ptr<State> &source, const std::shared_ptr<State> &target)
+              : source(source), target(target)
             {
-                FORWARD,
-                REVERSE
-            };
-
-        }  // namespace fitstar
+            }
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
-
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_DIRECTION_

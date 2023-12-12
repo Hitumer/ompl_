@@ -1,5 +1,5 @@
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_TOTALFORCE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_TOTALFORCE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_TOTALFORCE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_TOTALFORCE_
 
 #include <memory>
 #include <vector>
@@ -9,14 +9,14 @@
 #include "ompl/base/OptimizationObjective.h"
 #include "ompl/datastructures/BinaryHeap.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Edge.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             // Forward declare the ZIT* state class.
             class State;
@@ -128,7 +128,7 @@ namespace ompl
                 std::mutex state_mutex_;
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
@@ -177,4 +177,4 @@ inline std::vector<double> operator/(const std::vector<double> &lhs, double scal
     return result;
 }
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_TOTALFORCE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_TOTALFORCE_

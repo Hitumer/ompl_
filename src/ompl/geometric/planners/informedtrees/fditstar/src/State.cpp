@@ -34,13 +34,13 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/fitstar/State.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/State.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             namespace
             {
@@ -299,7 +299,7 @@ namespace ompl
                 }
             }
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 

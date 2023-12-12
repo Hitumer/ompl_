@@ -20,12 +20,12 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FDITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  LOSS OF USE, DATA, OR PROFDITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_RANDOM_GEOMETRIC_GRAPH_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_RANDOM_GEOMETRIC_GRAPH_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_RANDOM_GEOMETRIC_GRAPH_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_RANDOM_GEOMETRIC_GRAPH_
 
 #include <limits>
 #include <memory>
@@ -47,14 +47,14 @@
 #include "ompl/base/ProblemDefinition.h"
 #include "ompl/base/OptimizationObjective.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/State.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Edge.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/State.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             class RandomGeometricGraph
             {
@@ -138,10 +138,10 @@ namespace ompl
                  * model. */
                 bool getUseKNearest() const;
 
-                /** \brief Sets the maximum number of goals FIT* will sample from sampleable goal regions. */
+                /** \brief Sets the maximum number of goals FDIT* will sample from sampleable goal regions. */
                 void setMaxNumberOfGoals(unsigned int maxNumberOfGoals);
 
-                /** \brief Returns the maximum number of goals FIT* will sample from sampleable goal regions. */
+                /** \brief Returns the maximum number of goals FDIT* will sample from sampleable goal regions. */
                 unsigned int getMaxNumberOfGoals() const;
 
                 /** \brief Samples random states and adds them to the graph. */
@@ -326,14 +326,14 @@ namespace ompl
                 /** \brief Whether multiquery is enabled. */
                 bool isMultiqueryEnabled_{false};
 
-                /** \brief Whether to use a k-nearest RGG. If false, FIT* uses an r-disc RGG. */
+                /** \brief Whether to use a k-nearest RGG. If false, FDIT* uses an r-disc RGG. */
                 bool useKNearest_{false};
 
                 bool useRNearest_{true};
 
                 bool useAllKNearest_{true};
 
-                /** \brief The maximum number of goals FIT* will sample explicitly from a sampleable goal region. */
+                /** \brief The maximum number of goals FDIT* will sample explicitly from a sampleable goal region. */
                 unsigned int maxNumGoals_{1u};
 
                 /** \brief The number of neighbors that defines the neighborhood of a vertex if using a k-nearest graph.
@@ -376,10 +376,10 @@ namespace ompl
                 mutable unsigned int numNearestNeighborCalls_{0u};
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_RANDOM_GEOMETRIC_GRAPH_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_RANDOM_GEOMETRIC_GRAPH_

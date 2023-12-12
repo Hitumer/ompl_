@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_VERTEX_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_VERTEX_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_VERTEX_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_VERTEX_
 
 #include <memory>
 #include <vector>
@@ -44,16 +44,16 @@
 #include "ompl/base/OptimizationObjective.h"
 #include "ompl/datastructures/BinaryHeap.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Edge.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
-            // Forward declare the FIT* state class.
+            // Forward declare the FDIT* state class.
             class State;
 
             /** \brief The vertex class for both the forward and reverse search. */
@@ -125,7 +125,7 @@ namespace ompl
                 void registerExpansionInReverseSearch(std::size_t tag);
 
                 /** \brief Recursively calls the given function on this vertex and all its children in the tree. */
-                void callOnBranch(const std::function<void(const std::shared_ptr<fitstar::State> &)> &function);
+                void callOnBranch(const std::function<void(const std::shared_ptr<fditstar::State> &)> &function);
 
             private:
                 /** \brief The unique id of this vertex. */
@@ -171,10 +171,10 @@ namespace ompl
                     outgoingReverseQueueLookup_;
             };
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_QUEUE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_QUEUE_

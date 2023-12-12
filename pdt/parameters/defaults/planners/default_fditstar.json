@@ -1,11 +1,11 @@
 {
     "planner": {
-        "defaultFITstar": {
-            "type": "FITstar",
+        "defaultFDITstar": {
+            "type": "FDITstar",
             "isAnytime": true,
             "report": {
                 "color": "pdtred",
-                "name": "FIT*"
+                "name": "FDIT*"
             },
             "options": {
                 "radiusFactor": 1.001,

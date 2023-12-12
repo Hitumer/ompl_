@@ -140,43 +140,43 @@ void AITstarData::setVerticesInBackwardSearchTree(
   }
 }
 
-std::vector<ompl::geometric::fitstar::Edge> FITstarData::getReverseTree() const {
+std::vector<ompl::geometric::fditstar::Edge> FDITstarData::getReverseTree() const {
   return reverseTree_;
 }
 
-std::vector<ompl::geometric::fitstar::Edge> FITstarData::getForwardQueue() const {
+std::vector<ompl::geometric::fditstar::Edge> FDITstarData::getForwardQueue() const {
   return forwardQueue_;
 }
 
-std::vector<ompl::geometric::fitstar::Edge> FITstarData::getReverseQueue() const {
+std::vector<ompl::geometric::fditstar::Edge> FDITstarData::getReverseQueue() const {
   return reverseQueue_;
 }
 
-ompl::geometric::fitstar::Edge FITstarData::getNextForwardEdge() const {
+ompl::geometric::fditstar::Edge FDITstarData::getNextForwardEdge() const {
   return nextForwardEdge_;
 }
 
-ompl::geometric::fitstar::Edge FITstarData::getNextReverseEdge() const {
+ompl::geometric::fditstar::Edge FDITstarData::getNextReverseEdge() const {
   return nextReverseEdge_;
 }
 
-void FITstarData::setReverseTree(const std::vector<ompl::geometric::fitstar::Edge>& tree) {
+void FDITstarData::setReverseTree(const std::vector<ompl::geometric::fditstar::Edge>& tree) {
   reverseTree_ = tree;
 }
 
-void FITstarData::setForwardQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue) {
+void FDITstarData::setForwardQueue(const std::vector<ompl::geometric::fditstar::Edge>& queue) {
   forwardQueue_ = queue;
 }
 
-void FITstarData::setReverseQueue(const std::vector<ompl::geometric::fitstar::Edge>& queue) {
+void FDITstarData::setReverseQueue(const std::vector<ompl::geometric::fditstar::Edge>& queue) {
   reverseQueue_ = queue;
 }
 
-void FITstarData::setNextForwardEdge(const ompl::geometric::fitstar::Edge& edge) {
+void FDITstarData::setNextForwardEdge(const ompl::geometric::fditstar::Edge& edge) {
   nextForwardEdge_ = edge;
 }
 
-void FITstarData::setNextReverseEdge(const ompl::geometric::fitstar::Edge& edge) {
+void FDITstarData::setNextReverseEdge(const ompl::geometric::fditstar::Edge& edge) {
   nextReverseEdge_ = edge;
 }
 

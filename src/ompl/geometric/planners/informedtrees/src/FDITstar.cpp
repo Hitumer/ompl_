@@ -34,32 +34,32 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/FITstar.h"
+#include "ompl/geometric/planners/informedtrees/FDITstar.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "ompl/base/objectives/PathLengthOptimizationObjective.h"
 #include "ompl/geometric/PathGeometric.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/AdaptiveBatchSize.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/AdaptiveBatchSize.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/TotalForce.h"
 
 using namespace std::string_literals;
-using namespace ompl::geometric::fitstar;
+using namespace ompl::geometric::fditstar;
 
 namespace ompl
 {
     namespace geometric
     {
-        FITstar::FITstar(const std::shared_ptr<ompl::base::SpaceInformation> &spaceInfo)
-          : ompl::base::Planner(spaceInfo, "FIT*")
+        FDITstar::FDITstar(const std::shared_ptr<ompl::base::SpaceInformation> &spaceInfo)
+          : ompl::base::Planner(spaceInfo, "FDIT*")
           , graph_(spaceInfo, solutionCost_)
           , detectionState_(spaceInfo->allocState())
           , space_(spaceInfo->getStateSpace())
           , motionValidator_(spaceInfo->getMotionValidator())
           , solutionCost_()
         {
-            // Specify FIT*'s planner specs.
+            // Specify FDIT*'s planner specs.
             specs_.recognizedGoal = base::GOAL_SAMPLEABLE_REGION;
             specs_.multithreaded = false;
             specs_.approximateSolutions = true;
@@ -69,16 +69,16 @@ namespace ompl
             specs_.canReportIntermediateSolutions = true;
 
             // Register the setting callbacks.
-            declareParam<bool>("use_k_nearest", this, &FITstar::setUseKNearest, &FITstar::getUseKNearest, "0,1");
-            declareParam<bool>("use_adaptive_batchsize", this, &FITstar::setUseAdaptiveBatchSize,
-                               &FITstar::getUseAdaptiveBatchSize, "0,1");
-            declareParam<double>("rewire_factor", this, &FITstar::setRadiusFactor, &FITstar::getRadiusFactor,
+            declareParam<bool>("use_k_nearest", this, &FDITstar::setUseKNearest, &FDITstar::getUseKNearest, "0,1");
+            declareParam<bool>("use_adaptive_batchsize", this, &FDITstar::setUseAdaptiveBatchSize,
+                               &FDITstar::getUseAdaptiveBatchSize, "0,1");
+            declareParam<double>("rewire_factor", this, &FDITstar::setRadiusFactor, &FDITstar::getRadiusFactor,
                                  "1.0:0.01:3.0");
-            declareParam<bool>("use_graph_pruning", this, &FITstar::enablePruning, &FITstar::isPruningEnabled, "0,1");
-            declareParam<bool>("find_approximate_solutions", this, &FITstar::trackApproximateSolutions,
-                               &FITstar::areApproximateSolutionsTracked, "0,1");
-            declareParam<unsigned int>("set_max_num_goals", this, &FITstar::setMaxNumberOfGoals,
-                                       &FITstar::getMaxNumberOfGoals, "1:1:1000");
+            declareParam<bool>("use_graph_pruning", this, &FDITstar::enablePruning, &FDITstar::isPruningEnabled, "0,1");
+            declareParam<bool>("find_approximate_solutions", this, &FDITstar::trackApproximateSolutions,
+                               &FDITstar::areApproximateSolutionsTracked, "0,1");
+            declareParam<unsigned int>("set_max_num_goals", this, &FDITstar::setMaxNumberOfGoals,
+                                       &FDITstar::getMaxNumberOfGoals, "1:1:1000");
 
             // Register the progress properties.
             addPlannerProgressProperty("iterations INTEGER", [this]() { return std::to_string(iteration_); });
@@ -91,12 +91,12 @@ namespace ompl
                                        [this]() { return std::to_string(graph_.getNumberOfNearestNeighborCalls()); });
         }
 
-        FITstar::~FITstar()
+        FDITstar::~FDITstar()
         {
             spaceInfo_->freeState(detectionState_);
         }
 
-        void FITstar::setup()
+        void FDITstar::setup()
         {
             // Call the base class setup.
             Planner::setup();
@@ -119,7 +119,7 @@ namespace ompl
                     // If we were given a goal, make sure its of appropriate type.
                     if (!(problem_->getGoal()->hasType(ompl::base::GOAL_SAMPLEABLE_REGION)))
                     {
-                        OMPL_ERROR("FIT* is currently only implemented for goals that can be cast to "
+                        OMPL_ERROR("FDIT* is currently only implemented for goals that can be cast to "
                                    "ompl::base::GOAL_SAMPLEABLE_REGION.");
                         setup_ = false;
                         return;
@@ -136,15 +136,15 @@ namespace ompl
                 approximateSolutionCostToGoal_ = objective_->infiniteCost();
 
                 // Instantiate the queues.
-                forwardQueue_ = std::make_unique<fitstar::ForwardQueue>(objective_, space_);
+                forwardQueue_ = std::make_unique<fditstar::ForwardQueue>(objective_, space_);
                 if (isMultiqueryEnabled_)
                 {
-                    reverseQueue_ = std::make_unique<fitstar::ReverseQueue>(objective_, space_,
+                    reverseQueue_ = std::make_unique<fditstar::ReverseQueue>(objective_, space_,
                                                                             std::isfinite(suboptimalityFactor_));
                 }
                 else
                 {
-                    reverseQueue_ = std::make_unique<fitstar::ReverseQueue>(objective_, space_, true);
+                    reverseQueue_ = std::make_unique<fditstar::ReverseQueue>(objective_, space_, true);
                 }
 
                 // Setup the graph with the problem information.
@@ -173,7 +173,7 @@ namespace ompl
             }
         }
 
-        ompl::base::PlannerStatus FITstar::solve(const ompl::base::PlannerTerminationCondition &terminationCondition)
+        ompl::base::PlannerStatus FDITstar::solve(const ompl::base::PlannerTerminationCondition &terminationCondition)
         {
             // Check that the planner and state space are setup.
             auto status = ensureSetup();
@@ -216,7 +216,7 @@ namespace ompl
             return status;
         }
 
-        void FITstar::clear()
+        void FDITstar::clear()
         {
             if (forwardQueue_)
             {
@@ -251,7 +251,7 @@ namespace ompl
             setup_ = false;
         }
 
-        void FITstar::clearQuery()
+        void FDITstar::clearQuery()
         {
             if (setup_)
             {
@@ -282,39 +282,39 @@ namespace ompl
             }
         }
 
-        ompl::base::Cost FITstar::bestCost() const
+        ompl::base::Cost FDITstar::bestCost() const
         {
             return solutionCost_;
         }
 
-        void FITstar::setBatchSize(unsigned int numSamples)
+        void FDITstar::setBatchSize(unsigned int numSamples)
         {
             batchSize_ = numSamples;
         }
 
-        unsigned int FITstar::getBatchSize() const
+        unsigned int FDITstar::getBatchSize() const
         {
             return batchSize_;
         }
 
-        void FITstar::setInitialNumberOfSparseCollisionChecks(std::size_t numChecks)
+        void FDITstar::setInitialNumberOfSparseCollisionChecks(std::size_t numChecks)
         {
             initialNumSparseCollisionChecks_ = numChecks;
             numSparseCollisionChecksCurrentLevel_ = numChecks;
             numSparseCollisionChecksPreviousLevel_ = 0u;
         }
 
-        void FITstar::setRadiusFactor(double factor)
+        void FDITstar::setRadiusFactor(double factor)
         {
             graph_.setRadiusFactor(factor);
         }
 
-        double FITstar::getRadiusFactor() const
+        double FDITstar::getRadiusFactor() const
         {
             return graph_.getRadiusFactor();
         }
 
-        void FITstar::adjustRadiusFactor()
+        void FDITstar::adjustRadiusFactor()
         {
             if (std::isinf(solutionCost_.value()))
             {
@@ -345,105 +345,105 @@ namespace ompl
             return graph_.setRadiusFactor(rewireFactor);
         }
 
-        void FITstar::setSuboptimalityFactor(double factor)
+        void FDITstar::setSuboptimalityFactor(double factor)
         {
             suboptimalityFactor_ = factor;
         }
 
-        void FITstar::enableMultiquery(bool multiquery)
+        void FDITstar::enableMultiquery(bool multiquery)
         {
             isMultiqueryEnabled_ = multiquery;
             graph_.enableMultiquery(multiquery);
         };
 
-        bool FITstar::isMultiqueryEnabled() const
+        bool FDITstar::isMultiqueryEnabled() const
         {
             return isMultiqueryEnabled_;
         };
 
-        void FITstar::setStartGoalPruningThreshold(unsigned int threshold)
+        void FDITstar::setStartGoalPruningThreshold(unsigned int threshold)
         {
             graph_.setEffortThreshold(threshold);
         }
 
-        unsigned int FITstar::getStartGoalPruningThreshold() const
+        unsigned int FDITstar::getStartGoalPruningThreshold() const
         {
             return graph_.getEffortThreshold();
         }
 
-        void FITstar::enablePruning(bool enable)
+        void FDITstar::enablePruning(bool enable)
         {
             graph_.enablePruning(enable);
         }
 
-        bool FITstar::isPruningEnabled() const
+        bool FDITstar::isPruningEnabled() const
         {
             return graph_.isPruningEnabled();
         }
 
-        void FITstar::trackApproximateSolutions(bool track)
+        void FDITstar::trackApproximateSolutions(bool track)
         {
             trackApproximateSolutions_ = track;
         }
 
-        bool FITstar::areApproximateSolutionsTracked() const
+        bool FDITstar::areApproximateSolutionsTracked() const
         {
             return trackApproximateSolutions_;
         }
 
-        void FITstar::setUseKNearest(bool useKNearest)
+        void FDITstar::setUseKNearest(bool useKNearest)
         {
             graph_.setUseKNearest(useKNearest);
         }
 
-        bool FITstar::getUseKNearest() const
+        bool FDITstar::getUseKNearest() const
         {
             return graph_.getUseKNearest();
         }
 
-        void FITstar::setUseAdaptiveBatchSize(bool useAdaptiveBatchSize)
+        void FDITstar::setUseAdaptiveBatchSize(bool useAdaptiveBatchSize)
         {
             useAdaptiveBatchSize_ = useAdaptiveBatchSize;
         }
 
-        bool FITstar::getUseAdaptiveBatchSize() const
+        bool FDITstar::getUseAdaptiveBatchSize() const
         {
             return useAdaptiveBatchSize_;
         }
 
-        void FITstar::setMaxNumberOfGoals(unsigned int numberOfGoals)
+        void FDITstar::setMaxNumberOfGoals(unsigned int numberOfGoals)
         {
             graph_.setMaxNumberOfGoals(numberOfGoals);
         }
 
-        unsigned int FITstar::getMaxNumberOfGoals() const
+        unsigned int FDITstar::getMaxNumberOfGoals() const
         {
             return graph_.getMaxNumberOfGoals();
         }
 
-        bool FITstar::isForwardQueueEmpty() const
+        bool FDITstar::isForwardQueueEmpty() const
         {
             assert(forwardQueue_);
             return forwardQueue_->empty();
         }
 
-        bool FITstar::isReverseQueueEmpty() const
+        bool FDITstar::isReverseQueueEmpty() const
         {
             assert(reverseQueue_);
             return reverseQueue_->empty();
         }
 
-        std::vector<Edge> FITstar::getForwardQueue() const
+        std::vector<Edge> FDITstar::getForwardQueue() const
         {
             return forwardQueue_->getEdges();
         }
 
-        std::vector<Edge> FITstar::getReverseQueue() const
+        std::vector<Edge> FDITstar::getReverseQueue() const
         {
             return reverseQueue_->getEdges();
         }
 
-        std::vector<Edge> FITstar::getReverseTree() const
+        std::vector<Edge> FDITstar::getReverseTree() const
         {
             // Prepare the return value.
             std::vector<Edge> edges;
@@ -473,7 +473,7 @@ namespace ompl
             return edges;
         }
 
-        Edge FITstar::getNextForwardEdge() const
+        Edge FDITstar::getNextForwardEdge() const
         {
             assert(forwardQueue_);
             if (forwardQueue_->empty())
@@ -483,7 +483,7 @@ namespace ompl
             return forwardQueue_->peek(suboptimalityFactor_);
         }
 
-        Edge FITstar::getNextReverseEdge() const
+        Edge FDITstar::getNextReverseEdge() const
         {
             assert(reverseQueue_);
             if (reverseQueue_->empty())
@@ -493,7 +493,7 @@ namespace ompl
             return reverseQueue_->peek();
         }
 
-        void FITstar::getPlannerData(base::PlannerData &data) const
+        void FDITstar::getPlannerData(base::PlannerData &data) const
         {
             // Get the base class data.
             Planner::getPlannerData(data);
@@ -516,12 +516,12 @@ namespace ompl
             }
         }
 
-        void FITstar::setLocalSeed(std::uint_fast32_t localSeed)
+        void FDITstar::setLocalSeed(std::uint_fast32_t localSeed)
         {
             graph_.setLocalSeed(localSeed);
         }
 
-        void FITstar::iterate(const ompl::base::PlannerTerminationCondition &terminationCondition)
+        void FDITstar::iterate(const ompl::base::PlannerTerminationCondition &terminationCondition)
         {
             // If we are in a multiquery setting, we do not want to search the approximation
             // only consisting of start/goals, since this completely ignores the computational effort we have already
@@ -580,7 +580,7 @@ namespace ompl
             ++iteration_;
         }
 
-        void FITstar::iterateForwardSearch()
+        void FDITstar::iterateForwardSearch()
         {
             // Ensure the forward queue is not empty.
             assert(!forwardQueue_->empty());
@@ -688,7 +688,7 @@ namespace ompl
             }
         }
 
-        void FITstar::iterateReverseSearch()
+        void FDITstar::iterateReverseSearch()
         {
             // Ensure the reverse queue is not empty.
             assert(!reverseQueue_->empty());
@@ -814,7 +814,7 @@ namespace ompl
             }
         }
 
-        void FITstar::improveApproximation(const ompl::base::PlannerTerminationCondition &terminationCondition)
+        void FDITstar::improveApproximation(const ompl::base::PlannerTerminationCondition &terminationCondition)
         {
             // Add new states, also prunes states if enabled. The method returns true if all states have been added.
             if (graph_.addVAlidandInvalidStates(batchSize_, terminationCondition))
@@ -835,7 +835,7 @@ namespace ompl
             }
         }
 
-        ompl::base::PlannerStatus::StatusType FITstar::ensureSetup()
+        ompl::base::PlannerStatus::StatusType FDITstar::ensureSetup()
         {
             // Call the base planners validity check. This checks if the
             // planner is setup if not then it calls setup().
@@ -859,7 +859,7 @@ namespace ompl
         }
 
         ompl::base::PlannerStatus::StatusType
-        FITstar::ensureStartAndGoalStates(const ompl::base::PlannerTerminationCondition &terminationCondition)
+        FDITstar::ensureStartAndGoalStates(const ompl::base::PlannerTerminationCondition &terminationCondition)
         {
             // If the graph currently does not have a start state, try to get one.
             if (!graph_.hasStartState())
@@ -891,7 +891,7 @@ namespace ompl
             return ompl::base::PlannerStatus::StatusType::UNKNOWN;
         }
 
-        void FITstar::finalPathOptimize(std::vector<std::shared_ptr<State>> &states)
+        void FDITstar::finalPathOptimize(std::vector<std::shared_ptr<State>> &states)
         {
             size_t start = 0;
             while (start < states.size() - 1)
@@ -912,7 +912,7 @@ namespace ompl
         }
 
         std::shared_ptr<ompl::geometric::PathGeometric>
-        FITstar::getPathToState(const std::shared_ptr<fitstar::State> &state)
+        FDITstar::getPathToState(const std::shared_ptr<fditstar::State> &state)
         {
             // Allocate a vector for states. The append function of the path inserts states in front of an
             // std::vector, which is not very efficient. I'll rather iterate over the vector in reverse.
@@ -942,7 +942,7 @@ namespace ompl
             return path;
         }
 
-        bool FITstar::continueSolving(const ompl::base::PlannerTerminationCondition &terminationCondition) const
+        bool FDITstar::continueSolving(const ompl::base::PlannerTerminationCondition &terminationCondition) const
         {
             // We stop solving the problem if:
             //   - The termination condition is satisfied; or
@@ -955,7 +955,7 @@ namespace ompl
                       !pis_.haveMoreGoalStates()));
         }
 
-        unsigned int FITstar::getForwardEffort() const
+        unsigned int FDITstar::getForwardEffort() const
         {
             if (forwardQueue_->size() != 0u)
             {
@@ -968,7 +968,7 @@ namespace ompl
             return std::numeric_limits<unsigned int>::infinity();
         }
 
-        bool FITstar::continueReverseSearch() const
+        bool FDITstar::continueReverseSearch() const
         {
             // Never continue the reverse search if the reverse or forward queues are empty. There's nothing to continue
             // in the reverse search, if the reverse queue is empty. There's nothing to continue in the forward search,
@@ -985,7 +985,7 @@ namespace ompl
 
                1. The best edge in the forward search has a closed target (i.e. there is a path to an edge in the
                   forward queue). Since we expand the reverse queue ordered by effort in the case that the suboptimality
-                  factor is infite, and multiquery planning is enabled, this is the lowest effort path.
+                  factor is infdite, and multiquery planning is enabled, this is the lowest effort path.
 
                2. We already found a possible path, and there is no way that a lower effort path exists.
 
@@ -1036,7 +1036,7 @@ namespace ompl
             return !(condition1 || condition2 || condition3);
         }
 
-        bool FITstar::continueForwardSearch() const
+        bool FDITstar::continueForwardSearch() const
         {
             // Never continue to forward search if the forward queue is empty.
             if (forwardQueue_->empty())
@@ -1049,7 +1049,7 @@ namespace ompl
             return isBetter(forwardQueue_->getLowerBoundOnOptimalSolutionCost(), solutionCost_);
         }
 
-        void FITstar::updateExactSolution()
+        void FDITstar::updateExactSolution()
         {
             for (const auto &goal : graph_.getGoalStates())
             {
@@ -1060,7 +1060,7 @@ namespace ompl
             }
         }
 
-        ompl::base::PlannerStatus::StatusType FITstar::updateSolution()
+        ompl::base::PlannerStatus::StatusType FDITstar::updateSolution()
         {
             updateExactSolution();
             if (objective_->isFinite(solutionCost_))
@@ -1078,7 +1078,7 @@ namespace ompl
             }
         }
 
-        void FITstar::restartReverseSearch()
+        void FDITstar::restartReverseSearch()
         {
             reverseQueue_->clear();
 
@@ -1104,16 +1104,16 @@ namespace ompl
             ++reverseSearchTag_;
         }
 
-        void FITstar::updateApproximateSolution()
+        void FDITstar::updateApproximateSolution()
         {
             for (const auto &start : graph_.getStartStates())
             {
-                start->asForwardVertex()->callOnBranch([this](const std::shared_ptr<fitstar::State> &state) -> void
+                start->asForwardVertex()->callOnBranch([this](const std::shared_ptr<fditstar::State> &state) -> void
                                                        { updateApproximateSolution(state); });
             }
         }
 
-        void FITstar::updateCurrentCostToCome(const std::shared_ptr<fitstar::State> &state)
+        void FDITstar::updateCurrentCostToCome(const std::shared_ptr<fditstar::State> &state)
         {
             // There is no updating to do if the state is a start.
             if (graph_.isStart(state))
@@ -1134,7 +1134,7 @@ namespace ompl
                                                 forwardVertex->getEdgeCost()));
         }
 
-        void FITstar::updateExactSolution(const std::shared_ptr<fitstar::State> &goal)
+        void FDITstar::updateExactSolution(const std::shared_ptr<fditstar::State> &goal)
         {
             // We update the current goal if
             //   1. The new goal has a better cost to come than the old goal
@@ -1175,7 +1175,7 @@ namespace ompl
             }
         }
 
-        void FITstar::updateApproximateSolution(const std::shared_ptr<fitstar::State> &state)
+        void FDITstar::updateApproximateSolution(const std::shared_ptr<fditstar::State> &state)
         {
             assert(trackApproximateSolutions_);
             if ((state->hasForwardVertex() || graph_.isStart(state)) && !graph_.isGoal(state))
@@ -1200,7 +1200,7 @@ namespace ompl
             }
         }
 
-        ompl::base::Cost FITstar::computeCostToGoToGoal(const std::shared_ptr<fitstar::State> &state) const
+        ompl::base::Cost FDITstar::computeCostToGoToGoal(const std::shared_ptr<fditstar::State> &state) const
         {
             auto bestCost = objective_->infiniteCost();
             for (const auto &goal : graph_.getGoalStates())
@@ -1210,7 +1210,7 @@ namespace ompl
             return bestCost;
         }
 
-        void FITstar::informAboutNewSolution() const
+        void FDITstar::informAboutNewSolution() const
         {
             OMPL_INFORM("%s (%u iterations): Found a new exact solution of cost %.4f. Sampled a total of %u states, %u "
                         "of which were valid samples (%.1f \%). Processed %u edges, %u of which were collision checked "
@@ -1228,7 +1228,7 @@ namespace ompl
                         countNumVerticesInForwardTree(), countNumVerticesInReverseTree());
         }
 
-        void FITstar::informAboutPlannerStatus(ompl::base::PlannerStatus::StatusType status) const
+        void FDITstar::informAboutPlannerStatus(ompl::base::PlannerStatus::StatusType status) const
         {
             switch (status)
             {
@@ -1274,21 +1274,21 @@ namespace ompl
             }
         }
 
-        unsigned int FITstar::countNumVerticesInForwardTree() const
+        unsigned int FDITstar::countNumVerticesInForwardTree() const
         {
             const auto states = graph_.getStates();
             return std::count_if(states.cbegin(), states.cend(),
                                  [](const auto &state) { return state->hasForwardVertex(); });
         }
 
-        unsigned int FITstar::countNumVerticesInReverseTree() const
+        unsigned int FDITstar::countNumVerticesInReverseTree() const
         {
             const auto states = graph_.getStates();
             return std::count_if(states.cbegin(), states.cend(),
                                  [](const auto &state) { return state->hasReverseVertex(); });
         }
 
-        bool FITstar::couldImproveForwardPath(const Edge &edge) const
+        bool FDITstar::couldImproveForwardPath(const Edge &edge) const
         {
             // If we currently don't have a solution, the anwer is yes.
             if (!objective_->isFinite(solutionCost_))
@@ -1313,7 +1313,7 @@ namespace ompl
             }
         }
 
-        bool FITstar::couldImproveForwardTree(const Edge &edge) const
+        bool FDITstar::couldImproveForwardTree(const Edge &edge) const
         {
             const auto heuristicCostToCome =
                 combine(edge.source->getCurrentCostToCome(),
@@ -1321,7 +1321,7 @@ namespace ompl
             return isBetter(heuristicCostToCome, edge.target->getCurrentCostToCome());
         }
 
-        bool FITstar::doesImproveForwardPath(const Edge &edge, const ompl::base::Cost &edgeCost) const
+        bool FDITstar::doesImproveForwardPath(const Edge &edge, const ompl::base::Cost &edgeCost) const
         {
             // If we don't have a solution yet, the answer is imediately true.
             if (!objective_->isFinite(solutionCost_))
@@ -1335,19 +1335,19 @@ namespace ompl
                 solutionCost_);
         }
 
-        bool FITstar::doesImproveForwardTree(const Edge &edge, const ompl::base::Cost &edgeCost) const
+        bool FDITstar::doesImproveForwardTree(const Edge &edge, const ompl::base::Cost &edgeCost) const
         {
             return isBetter(combine(edge.source->getCurrentCostToCome(), edgeCost),
                             edge.target->getCurrentCostToCome());
         }
 
-        ompl::base::Cost FITstar::estimateCostToTarget(const fitstar::Edge &edge) const
+        ompl::base::Cost FDITstar::estimateCostToTarget(const fditstar::Edge &edge) const
         {
             return combine(edge.source->getEstimatedCostToGo(),
                            objective_->motionCostBestEstimate(edge.source->raw(), edge.target->raw()));
         }
 
-        unsigned int FITstar::estimateEffortToTarget(const fitstar::Edge &edge) const
+        unsigned int FDITstar::estimateEffortToTarget(const fditstar::Edge &edge) const
         {
             // if we previously validated (=whitelisted) an edge, the effort to
             // check is zero
@@ -1369,7 +1369,7 @@ namespace ompl
             return edge.source->getEstimatedEffortToGo() + checksToCome;
         }
 
-        bool FITstar::isValid(const Edge &edge) const
+        bool FDITstar::isValid(const Edge &edge) const
         {
             // The number of checks required to determine whether the edge is valid is the valid segment count minus one
             // because we know that the source and target states are valid.
@@ -1378,12 +1378,12 @@ namespace ompl
             return isValidAtResolution(edge, numChecks);
         }
 
-        bool FITstar::couldBeValid(const Edge &edge) const
+        bool FDITstar::couldBeValid(const Edge &edge) const
         {
             return isValidAtResolution(edge, numSparseCollisionChecksCurrentLevel_);
         }
 
-        bool FITstar::isValidAtResolution(const Edge &edge, std::size_t numChecks) const
+        bool FDITstar::isValidAtResolution(const Edge &edge, std::size_t numChecks) const
         {
             // Check if the edge is whitelisted.
             if (edge.source->isWhitelisted(edge.target))
@@ -1510,17 +1510,17 @@ namespace ompl
             return true;
         }
 
-        bool FITstar::isBetter(const ompl::base::Cost &lhs, const ompl::base::Cost &rhs) const
+        bool FDITstar::isBetter(const ompl::base::Cost &lhs, const ompl::base::Cost &rhs) const
         {
             return objective_->isCostBetterThan(lhs, rhs);
         }
 
-        ompl::base::Cost FITstar::combine(const ompl::base::Cost &lhs, const ompl::base::Cost &rhs) const
+        ompl::base::Cost FDITstar::combine(const ompl::base::Cost &lhs, const ompl::base::Cost &rhs) const
         {
             return objective_->combineCosts(lhs, rhs);
         }
 
-        void FITstar::expandStartVerticesIntoForwardQueue()
+        void FDITstar::expandStartVerticesIntoForwardQueue()
         {
             for (auto &vertex : startVertices_)
             {
@@ -1528,7 +1528,7 @@ namespace ompl
             }
         }
 
-        void FITstar::expandGoalVerticesIntoReverseQueue()
+        void FDITstar::expandGoalVerticesIntoReverseQueue()
         {
             for (auto &vertex : goalVertices_)
             {
@@ -1536,12 +1536,12 @@ namespace ompl
             }
         }
 
-        bool FITstar::isClosed(const std::shared_ptr<Vertex> &vertex) const
+        bool FDITstar::isClosed(const std::shared_ptr<Vertex> &vertex) const
         {
             return vertex->getExpandTag() == reverseSearchTag_;
         }
 
-        bool FITstar::isInForwardTree(const Edge &edge) const
+        bool FDITstar::isInForwardTree(const Edge &edge) const
         {
             if (!edge.source->hasForwardVertex() || !edge.target->hasForwardVertex())
             {
@@ -1551,7 +1551,7 @@ namespace ompl
             return edge.target->asForwardVertex()->isParent(edge.source->asForwardVertex());
         }
 
-        bool FITstar::isInReverseTree(const Edge &edge) const
+        bool FDITstar::isInReverseTree(const Edge &edge) const
         {
             if (!edge.source->hasReverseVertex() || !edge.target->hasReverseVertex())
             {
@@ -1561,7 +1561,7 @@ namespace ompl
             return edge.target->asReverseVertex()->isParent(edge.source->asReverseVertex());
         }
 
-        bool FITstar::doesImproveReversePath(const Edge &edge) const
+        bool FDITstar::doesImproveReversePath(const Edge &edge) const
         {
             // If there is no reverse path the answer is ja.
             if (!objective_->isFinite(reverseCost_))
@@ -1578,13 +1578,13 @@ namespace ompl
             return isBetter(heuristicPathCost, reverseCost_);
         }
 
-        bool FITstar::doesImproveReverseTree(const Edge &edge, const ompl::base::Cost &admissibleEdgeCost) const
+        bool FDITstar::doesImproveReverseTree(const Edge &edge, const ompl::base::Cost &admissibleEdgeCost) const
         {
             return isBetter(combine(edge.source->getAdmissibleCostToGo(), admissibleEdgeCost),
                             edge.target->getAdmissibleCostToGo());
         }
 
-        std::vector<Edge> FITstar::expandUnlessGoal(const std::shared_ptr<State> &state) const
+        std::vector<Edge> FDITstar::expandUnlessGoal(const std::shared_ptr<State> &state) const
         {
             if (graph_.isGoal(state))
             {
@@ -1594,7 +1594,7 @@ namespace ompl
             return expand(state, true);
         }
 
-        std::vector<Edge> FITstar::expand(const std::shared_ptr<State> &state, bool iterateForwardSearch) const
+        std::vector<Edge> FDITstar::expand(const std::shared_ptr<State> &state, bool iterateForwardSearch) const
         {
             // Only states associated with a vertex in either of the trees should be expanded.
             assert(state->hasForwardVertex() || state->hasReverseVertex());

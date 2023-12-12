@@ -985,8 +985,8 @@ void InteractiveVisualizer::drawPlannerSpecificVisualizations(const std::size_t 
       drawAITstarSpecificVisualizations(iteration);
       return;
     }
-    case common::PLANNER_TYPE::FITSTAR: {
-      drawFITstarSpecificVisualizations(iteration);
+    case common::PLANNER_TYPE::FDITSTAR: {
+      drawFDITstarSpecificVisualizations(iteration);
       return;
     }
 #ifdef PDT_EXTRA_EITSTAR_PR
@@ -1196,13 +1196,13 @@ void InteractiveVisualizer::drawAITstarSpecificVisualizations(const std::size_t 
   }
 }
 
-void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t iteration) const {
-  // Get the FIT* specific data.
-  auto fitstarData =
-      std::dynamic_pointer_cast<const FITstarData>(getPlannerSpecificData(iteration));
+void InteractiveVisualizer::drawFDITstarSpecificVisualizations(const std::size_t iteration) const {
+  // Get the FDIT* specific data.
+  auto fditstarData =
+      std::dynamic_pointer_cast<const FDITstarData>(getPlannerSpecificData(iteration));
   if (bounds_.low.size() == 2u) {
     // Get the forward queue.
-    auto forwardQueue = fitstarData->getForwardQueue();
+    auto forwardQueue = fditstarData->getForwardQueue();
     std::vector<Eigen::Vector2f> forwardQueueEdges;
     forwardQueueEdges.reserve(2u * forwardQueue.size());
     for (const auto& edge : forwardQueue) {
@@ -1218,7 +1218,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     drawLines(forwardQueueEdges, 1.5f, lightblue);
 
     // Get the reverse queue.
-    auto reverseQueue = fitstarData->getReverseQueue();
+    auto reverseQueue = fditstarData->getReverseQueue();
     std::vector<Eigen::Vector2f> reverseQueueEdges;
     reverseQueueEdges.reserve(2u * reverseQueue.size());
     for (const auto& edge : reverseQueue) {
@@ -1234,7 +1234,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     drawLines(reverseQueueEdges, 1.0f, green);
 
     // Get the reverse tree.
-    auto reverseTree = fitstarData->getReverseTree();
+    auto reverseTree = fditstarData->getReverseTree();
     std::vector<Eigen::Vector2f> reverseTreeEdges;
     reverseTreeEdges.reserve(2u * reverseTree.size());
     for (const auto& edge : reverseTree) {
@@ -1254,7 +1254,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     
 
     // Get the next edge in the forward queue.
-    auto nextForwardEdge = fitstarData->getNextForwardEdge();
+    auto nextForwardEdge = fditstarData->getNextForwardEdge();
 
     // If there are no more edges in the queue, this will return an edge with nullptrs.
     if (nextForwardEdge.source && nextForwardEdge.target) {
@@ -1272,7 +1272,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     }
 
     // Get the next edge in the reverse queue.
-    auto nextReverseEdge = fitstarData->getNextReverseEdge();
+    auto nextReverseEdge = fditstarData->getNextReverseEdge();
 
     // If there are no more edges in the queue, this will return an edge with nullptrs.
     if (nextReverseEdge.source && nextReverseEdge.target) {
@@ -1290,7 +1290,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     }
   } else if (bounds_.low.size() == 3u) {
     // Get the forward queue.
-    auto forwardQueue = fitstarData->getForwardQueue();
+    auto forwardQueue = fditstarData->getForwardQueue();
     std::vector<Eigen::Vector3f> forwardQueueEdges;
     forwardQueueEdges.reserve(2u * forwardQueue.size());
     for (const auto& edge : forwardQueue) {
@@ -1308,7 +1308,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     drawLines(forwardQueueEdges, 1.5f, lightblue);
 
     // Get the reverse queue.
-    auto reverseQueue = fitstarData->getReverseQueue();
+    auto reverseQueue = fditstarData->getReverseQueue();
     std::vector<Eigen::Vector3f> reverseQueueEdges;
     reverseQueueEdges.reserve(2u * reverseQueue.size());
     for (const auto& edge : reverseQueue) {
@@ -1326,7 +1326,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     drawLines(reverseQueueEdges, 1.5f, yellow);
 
     // Get the reverse tree.
-    auto reverseTree = fitstarData->getReverseTree();
+    auto reverseTree = fditstarData->getReverseTree();
     std::vector<Eigen::Vector3f> reverseTreeEdges;
     reverseTreeEdges.reserve(2u * reverseTree.size());
     for (const auto& edge : reverseTree) {
@@ -1344,7 +1344,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     drawLines(reverseTreeEdges, 2.0f, blue);
 
     // Get the next edge in the forward queue.
-    auto nextForwardEdge = fitstarData->getNextForwardEdge();
+    auto nextForwardEdge = fditstarData->getNextForwardEdge();
 
     // If there are no more edges in the queue, this will return an edge with nullptrs.
     if (nextForwardEdge.source && nextForwardEdge.target) {
@@ -1364,7 +1364,7 @@ void InteractiveVisualizer::drawFITstarSpecificVisualizations(const std::size_t 
     }
 
     // Get the next edge in the reverse queue.
-    auto nextReverseEdge = fitstarData->getNextReverseEdge();
+    auto nextReverseEdge = fditstarData->getNextReverseEdge();
 
     // If there are no more edges in the queue, this will return an edge with nullptrs.
     if (nextReverseEdge.source && nextReverseEdge.target) {

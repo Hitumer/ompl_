@@ -34,7 +34,7 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#include "ompl/geometric/planners/informedtrees/fitstar/RandomGeometricGraph.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/RandomGeometricGraph.h"
 
 #include <cmath>
 
@@ -43,15 +43,15 @@
 #include "ompl/base/OptimizationObjective.h"
 #include "ompl/util/GeometricEquations.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/TotalForce.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/TotalForce.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             RandomGeometricGraph::RandomGeometricGraph(const std::shared_ptr<ompl::base::SpaceInformation> &spaceInfo,
                                                        const ompl::base::Cost &solutionCost)
@@ -324,7 +324,7 @@ namespace ompl
 
                 if (!goalStates_.empty() && startStates_.empty())
                 {
-                    OMPL_WARN("FIT*: The problem has a goal but not a start. FIT* can not find a solution since "
+                    OMPL_WARN("FDIT*: The problem has a goal but not a start. FDIT* can not find a solution since "
                               "PlannerInputStates provides no method to wait for a valid start state to appear.");
                 }
 
@@ -375,7 +375,6 @@ namespace ompl
                 // 找出forceDirection中的最大值
                 double maxForceDirection = *std::max_element(forceDirection.begin(), forceDirection.end());
 
-                // 计算两个状态之间的椭圆距离
                 if (!state)
                 {
                     throw std::invalid_argument("Provided state1 is null");
@@ -402,12 +401,9 @@ namespace ompl
                     theta2 += cstate2->values[i];
                     dx += cos(theta1) - cos(theta2);
                     dy += sin(theta1) - sin(theta2);
-                    // std::cout << "vector" << Vector[i] << std::endl;
                     dist += sqrt((dx * dx + dy * dy) * (forceDirection[i] * forceDirection[i]));
                 }
-                // std::cout << "dist:   " << dist << std::endl;
 
-                // 判断是否在椭圆内
                 return dist <= Radius / maxForceDirection;
             }
 
@@ -614,7 +610,6 @@ namespace ompl
                     ++numValidSamples_;
 
                     state->setAttractive();
-                    // std::cout << state->isAttractive_ << std::endl;
 
                     // and we add it to the buffer
                     buffer_.emplace_back(state);
@@ -824,7 +819,7 @@ namespace ompl
                     newSamples_.clear();
 
                     // Update the radius by considering all informed states.
-                    if (useAllKNearest_)  // 合并两个条件
+                    if (useAllKNearest_)
                     {
                         numNeighbors_ = computeNumberOfNeighbors(numInformedSamples + numNewStates);
                         radius_ = computeRadius(numInformedSamples + numNewStates);
@@ -1064,14 +1059,14 @@ namespace ompl
                             std::vector<double> totalForceDirection3;
                             std::vector<double> totalForceDirection4;
                             std::size_t increasingNeighbors;
-                            
-                            // increasingNeighbors = ceil(pow(numNeighbors_,4));
 
-                            std::cout << "increasingNeighbors :: " << increasingNeighbors << std::endl;
+                            // increasingNeighbors = ceil(pow(numNeighbors_,4));
 
                             double dimension = static_cast<double>(dimension_);
 
-                            increasingNeighbors = ceil(pow(numNeighbors_,(log(dimension) / log(2.0))));
+                            increasingNeighbors = ceil(pow(numNeighbors_, (log(dimension) / log(2.0))));
+
+                            std::cout << "increasingNeighbors :: " << increasingNeighbors << std::endl;
 
                             for (auto point : buffer_)
                             {
@@ -1117,8 +1112,6 @@ namespace ompl
                                     //     state, totalForceDirection, Allneighbors, increasingNeighbors, dimension_);
 
                                     samples_.nearestK(state, numNeighbors_, temp_neighbors);
-
-                                    std::cout << "not compare -- neighbors :   " << temp_neighbors.size() << std::endl;
                                 }
 
                                 else
@@ -1140,7 +1133,7 @@ namespace ompl
                                         //         ++it;  // If found, continue to the next element
                                         //     }
                                         // }
-                                        std::cout << "compared before fliter :" << numNeighbors_ << std::endl;
+                                        // std::cout << "compared before fliter :" << numNeighbors_ << std::endl;
 
                                         totalforce.totalForce(state, temp_neighbors);
                                         totalforce.totalForcewithStart(state, startState, goalState,
@@ -1186,22 +1179,10 @@ namespace ompl
                                                 ++it;  // If found, continue to the next element
                                             }
                                         }
-                                        std::cout << "after fliter :" << temp_neighbors.size() << std::endl;
                                     }
                                 }
 
-                                // std::shared_ptr<ompl::geometric::fitstar::State> state_temp = state ;
-                                // for (int i = 0; i < dimension_; i++){
-
-                                //     state_temp->raw() = state[i] * totalForceDirection3[i];
-                                //     state->
-                                // }
-
                                 setForceDirection(totalforce.totalForceVecwithStart_);
-
-                                //    std::cout << "neighbors size:: " << neighbors.size() <<std::endl;
-
-                                // samples_.nearestR(state, radius_, neighbors);
                             }
                             neighbors = temp_neighbors;
                             // std::cout << "*************************************************" << std::endl;
@@ -1493,13 +1474,14 @@ namespace ompl
 
                 // PRM*
 
-                std::cout << "radiusFactor_"
-                          << radiusFactor_ * 2.0 *
-                                 std::pow((1.0 + 1.0 / dimension_) *
-                                              (sampler_->getInformedMeasure(solutionCost_) / unitNBallMeasure_) *
-                                              (std::log(static_cast<double>(numInformedSamples)) / numInformedSamples),
-                                          1.0 / dimension_)
-                          << std::endl;
+                // std::cout << "radiusFactor_"
+                //           << radiusFactor_ * 2.0 *
+                //                  std::pow((1.0 + 1.0 / dimension_) *
+                //                               (sampler_->getInformedMeasure(solutionCost_) / unitNBallMeasure_) *
+                //                               (std::log(static_cast<double>(numInformedSamples)) /
+                //                               numInformedSamples),
+                //                           1.0 / dimension_)
+                //           << std::endl;
                 return radiusFactor_ * 2.0 *
                        std::pow((1.0 + 1.0 / dimension_) *
                                     (sampler_->getInformedMeasure(solutionCost_) / unitNBallMeasure_) *
@@ -1507,7 +1489,7 @@ namespace ompl
                                 1.0 / dimension_);
             }
 
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 

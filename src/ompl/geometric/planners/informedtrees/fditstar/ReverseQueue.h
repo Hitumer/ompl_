@@ -34,8 +34,8 @@
 
 // Authors: Marlin Strub, Liding Zhang, Xu Liang
 
-#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_REVERSE_QUEUE_
-#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_REVERSE_QUEUE_
+#ifndef OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_REVERSE_QUEUE_
+#define OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_REVERSE_QUEUE_
 
 #include <array>
 #include <map>
@@ -46,15 +46,15 @@
 #include "ompl/datastructures/BinaryHeap.h"
 #include "ompl/datastructures/NearestNeighbors.h"
 
-#include "ompl/geometric/planners/informedtrees/fitstar/Direction.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Edge.h"
-#include "ompl/geometric/planners/informedtrees/fitstar/Vertex.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Direction.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Edge.h"
+#include "ompl/geometric/planners/informedtrees/fditstar/Vertex.h"
 
 namespace ompl
 {
     namespace geometric
     {
-        namespace fitstar
+        namespace fditstar
         {
             class ReverseQueue
             {
@@ -143,10 +143,10 @@ namespace ompl
                 /** \brief The queue is ordered on [g + c + h, g + c, effort] */
                 CostEffortHeap queue_;
             };
-        }  // namespace fitstar
+        }  // namespace fditstar
 
     }  // namespace geometric
 
 }  // namespace ompl
 
-#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FITSTAR_REVERSE_QUEUE_
+#endif  // OMPL_GEOMETRIC_PLANNERS_INFORMEDTREES_FDITSTAR_REVERSE_QUEUE_
